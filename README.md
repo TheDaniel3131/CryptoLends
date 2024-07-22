@@ -4,11 +4,21 @@ CryptoLends is a DeFi (Decentralized Finance) application that offers a decentra
 
 To get started with CryptoLends, you can try running some of the following tasks:
 
+## Frontend Commands
+
+Please install these before running npm run dev!
+
+```shell
+npx v0 add Sf3MALSwyYX
+```
+
+## Backend Commands
+
 ```shell
 npx hardhat help
 npx hardhat node
-npm run test 
-npm run deploy 
+npm run test
+npm run deploy
 npm run compile
 ```
 

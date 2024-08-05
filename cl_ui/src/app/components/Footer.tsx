@@ -1,7 +1,7 @@
 import Link from "next/link"
 import React from "react"
 
-function CoinsIcon(props) {
+function CoinsIcon(props: React.JSX.IntrinsicAttributes & React.SVGProps<SVGSVGElement>) {
     return (
         <svg
             {...props}
@@ -36,6 +36,9 @@ export function Footer() {
                 </Link>
                 <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
                     Privacy Policy
+                </Link>
+                <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
+                    About Us
                 </Link>
                 <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
                     Contact Us

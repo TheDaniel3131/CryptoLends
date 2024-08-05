@@ -8,7 +8,7 @@ import ico from '@/abi/ico.json'
 import { ICOContractAddress } from '@/utils/smartContractAddress'
 
 
-export function BuyToken() {
+export default function BuyToken() {
     const contractAddress = ICOContractAddress as Address
     const [amount, setAmount] = useState('0.01')
 

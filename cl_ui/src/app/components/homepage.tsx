@@ -23,34 +23,13 @@ To read more about using these font, please visit the Next.js documentation:
 - App Directory: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
-import Link from "next/link"
+
 import { Button } from "@/app/ui/button"
-import { Connect } from "@/app/components/Connect"
+import { JSX, SVGProps } from "react"
 
 export function Homepage() {
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <header className="bg-primary text-primary-foreground py-4 px-6 flex items-center justify-between">
-        <Link href="#" className="flex items-center gap-2" prefetch={false}>
-          <CoinsIcon className="h-8 w-8" />
-          <span className="text-xl font-bold">CryptoLends</span>
-        </Link>
-        <nav className="hidden md:flex items-center gap-4">
-          <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-            Lend
-          </Link>
-          <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-            Borrow
-          </Link>
-          <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-            About
-          </Link>
-          <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-            Contact
-          </Link>
-        </nav>
-        <Connect />
-      </header>
+    <div className="flex flex-col min-h-[100dvh] bg-white">
       <main className="flex-1">
         <section className="bg-primary py-16 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="max-w-md space-y-4">
@@ -60,11 +39,11 @@ export function Homepage() {
               secure transactions. Start lending or borrowing today!
             </p>
             <div className="flex gap-4">
-              <Button>Start Lending</Button>
+              <Button>Get Started</Button>
               <Button variant="secondary">Start Borrowing</Button>
             </div>
           </div>
-          <div className="bg-primary-foreground/10 rounded-2xl p-6 w-full md:w-auto">
+          <div className="bg-background rounded-2xl p-6 w-full md:w-auto">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex flex-col items-center">
                 <span className="text-4xl font-bold text-primary">$12.5M</span>
@@ -163,7 +142,7 @@ export function Homepage() {
   )
 }
 
-function CheckIcon(props) {
+function CheckIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -182,7 +161,7 @@ function CheckIcon(props) {
   )
 }
 
-function CoinsIcon(props) {
+function CoinsIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -204,7 +183,7 @@ function CoinsIcon(props) {
   )
 }
 
-function CurrencyIcon(props) {
+function CurrencyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -227,7 +206,7 @@ function CurrencyIcon(props) {
   )
 }
 
-function LockIcon(props) {
+function LockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -247,7 +226,7 @@ function LockIcon(props) {
   )
 }
 
-function XIcon(props) {
+function XIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

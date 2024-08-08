@@ -1,12 +1,12 @@
 import { Footer } from '@/components/Footer';
-import LendingPage from '../../components/(lend)/Lending';
+import ToSPage from '../../components/(tos)/ToS';
 import { Header } from '@/components/Header';
 
-export default function Lending() {
+export default function ToS() {
     return (
         <div>
             <Header />
-            <LendingPage />
+            <ToSPage />
             <Footer />
         </div>
     )

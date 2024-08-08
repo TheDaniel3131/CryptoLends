@@ -1,10 +1,13 @@
-export default function ContactUs() {
+import { Footer } from '@/components/Footer';
+import ContactUsPage from '../../components/(contact)/ContactUs';
+import { Header } from '@/components/Header';
+
+export default function Contact() {
     return (
         <div>
-            <h1>Contact Us</h1>
-            <p>
-                For any questions or feedback, please contact us at support@cryptolends.com.
-            </p>
+            <Header />
+            <ContactUsPage />
+            <Footer />
         </div>
     )
 }

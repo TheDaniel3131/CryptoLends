@@ -1,12 +1,13 @@
-const About = () => {
+import { Footer } from '@/components/Footer';
+import AboutUsPage from '../../components/(about)/AboutUs';
+import { Header } from '@/components/Header';
+
+export default function About() {
     return (
         <div>
-            <h1>About Us</h1>
-            <p>
-                CryptoLends is a decentralized platform that allows users to lend and borrow cryptocurrencies. We are a team of crypto enthusiasts who are passionate about decentralization and the future of finance.
-            </p>
+            <Header />
+            <AboutUsPage />
+            <Footer />
         </div>
     )
 }
-
-export default About;

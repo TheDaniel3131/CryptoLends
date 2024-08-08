@@ -24,6 +24,7 @@ To read more about using these font, please visit the Next.js documentation:
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
 
+import Link from "next/link"
 import { Button } from "@/app/ui/button"
 import { JSX, SVGProps } from "react"
 
@@ -39,8 +40,8 @@ export function Homepage() {
               secure transactions. Start lending or borrowing today!
             </p>
             <div className="flex gap-4">
-              <Button>Get Started</Button>
-              <Button variant="secondary">Start Borrowing</Button>
+              <Link href="/borrow" className="hover:underline underline-offset-4"><Button variant="secondary">Start Borrowing</Button></Link>
+              <Link href="/lend" className="hover:underline underline-offset-4"><Button>Earn Through Lending</Button></Link>
             </div>
           </div>
           <div className="bg-background rounded-2xl p-6 w-full md:w-auto">

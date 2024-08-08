@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Connect } from "@/app/components/Connect"
+import { Connect } from "./Connect"
 import { JSX, SVGProps } from "react"
 
 export function Header() {

@@ -31,16 +31,16 @@ export function Footer() {
                 <span>&copy; 2024 CryptoLends. All rights reserved.</span>
             </div>
             <nav className="flex items-center gap-4 mt-4 md:mt-0">
-                <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
+                <Link href="/tos" className="hover:underline underline-offset-4" prefetch={false}>
                     Terms of Service
                 </Link>
-                <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
+                <Link href="/pp" className="hover:underline underline-offset-4" prefetch={false}>
                     Privacy Policy
                 </Link>
-                <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
+                <Link href="/about" className="hover:underline underline-offset-4" prefetch={false}>
                     About Us
                 </Link>
-                <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
+                <Link href="/contact" className="hover:underline underline-offset-4" prefetch={false}>
                     Contact Us
                 </Link>
             </nav>

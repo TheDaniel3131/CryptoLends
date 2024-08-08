@@ -1,12 +1,12 @@
 import { Footer } from '@/components/Footer';
-import LendingPage from '../../components/(lend)/Lending';
+import PrivacyPolicyPage from '../../components/(pp)/PrivacyPolicy';
 import { Header } from '@/components/Header';
 
-export default function Lending() {
+export default function PP() {
     return (
         <div>
             <Header />
-            <LendingPage />
+            <PrivacyPolicyPage />
             <Footer />
         </div>
     )

@@ -1,12 +1,19 @@
-import Link from "next/link";
+"use client"
+
 import React from "react";
-import { Connect } from "@/components/Connect";
+import { useForm, ValidationError } from "@formspree/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function ContactUsPage() {
+export default function ContactForm() {
+    const [state, handleSubmit] = useForm("myzgjpgo");
+
+    if (state.succeeded) {
+        return <p>Your email has been submitted!</p>;
+    }
+
     return (
         <div className="flex flex-col min-h-[85dvh]">
             <main className="flex-1">
@@ -15,20 +22,23 @@ export default function ContactUsPage() {
                         <h1 className="text-4xl font-bold">Contact Us</h1>
                         <p className="text-muted-foreground">Get in touch with our team for any inquiries or support.</p>
                         <div className="bg-background p-6 rounded-xl shadow-sm grid gap-4">
-                            <form className="grid gap-4">
+                            <form className="grid gap-4" onSubmit={handleSubmit}>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name</Label>
-                                    <Input id="name" placeholder="Enter your name" />
+                                    <Input id="name" placeholder="Enter your name" required />
                                 </div>
+                                <ValidationError prefix="Name" field="name" errors={state.errors} />
                                 <div className="grid gap-2">
                                     <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" placeholder="Enter your email" />
+                                    <Input id="email" type="email" placeholder="Enter your email" required />
                                 </div>
+                                <ValidationError prefix="Email" field="email" errors={state.errors} />
                                 <div className="grid gap-2">
                                     <Label htmlFor="subject">Subject</Label>
-                                    <Textarea id="subject" placeholder="Briefly describe your inquiry" className="min-h-[100px]" />
+                                    <Textarea id="subject" placeholder="Briefly describe your inquiry" className="min-h-[100px]" required />
                                 </div>
-                                <Button type="submit" className="w-full">
+                                <ValidationError prefix="Subject" field="subject" errors={state.errors} />
+                                <Button type="submit" disabled={state.submitting} className="w-full">
                                     Submit
                                 </Button>
                             </form>
@@ -39,27 +49,3 @@ export default function ContactUsPage() {
         </div>
     );
 }
-
-// interface IconProps extends React.SVGProps<SVGSVGElement> { }
-
-// function CoinsIcon(props: IconProps) {
-//     return (
-//         <svg
-//             {...props}
-//             xmlns="http://www.w3.org/2000/svg"
-//             width="24"
-//             height="24"
-//             viewBox="0 0 24 24"
-//             fill="none"
-//             stroke="currentColor"
-//             strokeWidth="2"
-//             strokeLinecap="round"
-//             strokeLinejoin="round"
-//         >
-//             <circle cx="8" cy="8" r="6" />
-//             <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-//             <path d="M7 6h1v4" />
-//             <path d="m16.71 13.88.7.71-2.82 2.82" />
-//         </svg>
-//     );
-// }

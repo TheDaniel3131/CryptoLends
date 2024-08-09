@@ -14,27 +14,6 @@ import { Badge } from "@/components/ui/badge"
 export default function Component(): JSX.Element {
     return (
         <div className="flex flex-col min-h-[100dvh]">
-            <header className="bg-secondary text-secondary-foreground py-4 px-6 flex items-center justify-between">
-                <Link href="#" className="flex items-center gap-2" prefetch={false}>
-                    <CoinsIcon className="h-8 w-8" />
-                    <span className="text-xl font-bold">CryptoLends</span>
-                </Link>
-                <nav className="hidden md:flex items-center gap-4">
-                    <Link href="#" className="hover:underline underline-offset-4 text-secondary-foreground" prefetch={false}>
-                        Dashboard
-                    </Link>
-                    <Link href="#" className="hover:underline underline-offset-4 text-secondary-foreground" prefetch={false}>
-                        Borrow
-                    </Link>
-                    <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-                        About
-                    </Link>
-                    <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-                        Contact
-                    </Link>
-                </nav>
-                <Button>Connect Wallet</Button>
-            </header>
             <main className="flex-1">
                 <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
                     <div className="max-w-3xl space-y-6 text-center">
@@ -149,23 +128,6 @@ export default function Component(): JSX.Element {
                     </div>
                 </section>
             </main>
-            <footer className="bg-secondary text-secondary-foreground py-6 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <CoinsIcon className="h-6 w-6" />
-                    <span>&copy; 2024 CryptoLends. All rights reserved.</span>
-                </div>
-                <nav className="flex items-center gap-4 mt-4 md:mt-0">
-                    <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-                        Terms of Service
-                    </Link>
-                    <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-                        Privacy Policy
-                    </Link>
-                    <Link href="#" className="hover:underline underline-offset-4" prefetch={false}>
-                        Contact Us
-                    </Link>
-                </nav>
-            </footer>
         </div>
     )
 }

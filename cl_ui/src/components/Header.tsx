@@ -10,10 +10,10 @@ export function Header() {
                 <span className="text-xl font-bold">CryptoLends</span>
             </Link>
             <nav className="hidden md:flex items-center gap-4">
-                <Link href="/borrow" className="hover:underline underline-offset-4">
+                <Link href="/borrowdashboard" className="hover:underline underline-offset-4">
                     Borrow Now
                 </Link>
-                <Link href="/lend" className="hover:underline underline-offset-4">
+                <Link href="/lend" className="hover:underline underline-offset-4">  
                     Lending
                 </Link>
                 <Link href="/about" className="hover:underline underline-offset-4">
@@ -21,6 +21,9 @@ export function Header() {
                 </Link>
                 <Link href="/contact" className="hover:underline underline-offset-4">
                     Contact Us
+                </Link>
+                <Link href="/dashboard" className="hover:underline underline-offset-4">
+                    My Profile
                 </Link>
             </nav>
             <Connect />

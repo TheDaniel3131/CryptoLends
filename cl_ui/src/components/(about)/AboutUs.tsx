@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Connect } from "@/components/Connect";
 import { Button } from "@/components/ui/button";
+import { useAccount } from 'wagmi'
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function AboutUsPage() {

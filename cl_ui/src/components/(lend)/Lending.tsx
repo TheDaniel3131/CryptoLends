@@ -4,6 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import Link from "next/link";
+import { useConnect, useAccount, useDisconnect } from 'wagmi'
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {

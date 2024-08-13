@@ -24,6 +24,9 @@ export default function RootLayout({
   const initialState = cookieToInitialState(config, headers().get('cookie'))
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="favicon.ico" sizes="any" />
+      </head>
       <body>
         <Web3ModalProvider initialState={initialState}>
           {children}

@@ -1,8 +1,13 @@
+"use client"
+
 import Link from "next/link"
+import { useAccount } from 'wagmi'
 import { Connect } from "./Connect"
 import { JSX, SVGProps } from "react"
 
 export function Header() {
+    const { isConnected } = useAccount()
+
     return (
         <header className="bg-primary text-primary-foreground py-4 px-6 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
@@ -13,7 +18,7 @@ export function Header() {
                 <Link href="/borrowdashboard" className="hover:underline underline-offset-4">
                     Borrow Now
                 </Link>
-                <Link href="/lend" className="hover:underline underline-offset-4">  
+                <Link href="/lend" className="hover:underline underline-offset-4">
                     Lending
                 </Link>
                 <Link href="/about" className="hover:underline underline-offset-4">
@@ -22,15 +27,16 @@ export function Header() {
                 <Link href="/contact" className="hover:underline underline-offset-4">
                     Contact Us
                 </Link>
-                <Link href="/dashboard" className="hover:underline underline-offset-4">
-                    My Profile
-                </Link>
+                {isConnected && (
+                    <Link href="/dashboard" className="hover:underline underline-offset-4">
+                        My Profile
+                    </Link>
+                )}
             </nav>
             <Connect />
         </header>
     )
 }
-
 
 function CoinsIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
     return (

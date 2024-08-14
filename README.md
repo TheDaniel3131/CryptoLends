@@ -30,6 +30,6 @@ npm run deploy is same as npx hardhat ignition deploy ./ignition/modules/Lock.ts
 npm run compile is same as npx hardhat compile
 ```
 
-#### Misc:
+#### Misc (Not for Public View):
 
 Discussion Threads: [Google Docs Link](https://docs.google.com/document/d/1ktRCx8tw9-VSfIOH4tqIF9Btzvad_O_SZXijZx36rd8/edit?usp=sharing)

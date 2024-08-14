@@ -1,6 +1,6 @@
-"use client";
+"use client"
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, ValidationError } from "@formspree/react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,16 +16,18 @@ export default function ContactForm() {
         event.preventDefault();
         try {
             await handleSubmit(event);
-            if (state.succeeded) {
-                toast.success("Your email has been submitted!");
-            } else {
-                toast.error("There was an error submitting the form. Please try again.");
-            }
         } catch (error) {
             console.error("Form submission error:", error);
-            toast.error("There was an error submitting the form. Please try again.");
         }
     };
+
+    useEffect(() => {
+        if (state.succeeded) {
+            toast.success("Your email has been submitted!");
+        } else if (Array.isArray(state.errors) && state.errors.length > 0) {
+            toast.error("There was an error submitting the form. Please try again.");
+        }
+    }, [state]);
 
     return (
         <div className="flex flex-col min-h-[85dvh]">

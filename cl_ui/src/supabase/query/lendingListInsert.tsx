@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js'
 export async function lendingListInsert(
     address: string,
     amount: number,
-    smart_contract:string,
+    currency:string,
     duration:number,
     interest_rate:number
 ): Promise<boolean> {
@@ -17,7 +17,7 @@ export async function lendingListInsert(
     const { data, error } = await supabase.rpc('insert_lending_list', {
         address: address,
         amount: amount,
-        contract: smart_contract,
+        currency: currency,
         duration_month: duration,
         rate: interest_rate
     });

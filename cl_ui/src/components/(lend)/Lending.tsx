@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { parseEther } from 'viem';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,6 +22,9 @@ import { SVGProps } from "react";
 import { lendingListInsert } from '../../supabase/query/lendingListInsert';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ICOContractAddress } from '@/utils/smartContractAddress';
+import ico from '@/abi/ICO.json';
+import { print } from "@/utils/toast";
 
 // SVG Icon components
 function CoinsIcon(props: SVGProps<SVGSVGElement>) {
@@ -164,11 +168,39 @@ export default function LendingPage() {
     const [rate, setRate] = useState<number>(0);
     const [message, setMessage] = useState('');
 
+    const { data: simulateData, error: simulateError } = useSimulateContract({
+        address: ICOContractAddress as `0x${string}`,
+        abi: ico.abi,
+        functionName: 'buyToken',
+        value: parseEther(amount.toString()),
+    })
+
+    const { data: hash, error: writeError, writeContract } = useWriteContract()
+
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({
+            hash,
+        })
+
     useEffect(() => {
         if (message) {
             toast.success(message);
         }
     }, [message]);
+
+    useEffect(() => {
+        if (isConfirmed && hash) {
+            lendingListInsert(address!, amount, contract, parseInt(term), rate)
+                .then((result) => {
+                    setMessage(result ? 'Your lending entry has been successfully added!' : 'Failed to add your lending entry.');
+                    print("Lending transaction confirmed and recorded in the database.", "success");
+                })
+                .catch((error) => {
+                    console.error("Error inserting lending entry:", error);
+                    print("Failed to record lending entry in the database.", "error");
+                });
+        }
+    }, [isConfirmed, hash, address, amount, contract, term, rate]);
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -176,9 +208,25 @@ export default function LendingPage() {
             setMessage('Please connect your wallet first');
             return;
         }
-        const result = await lendingListInsert(address, amount, contract, parseInt(term), rate);
-        setMessage(result ? 'Your lending entry has successfully added!' : 'Failed to add your lending entry!');
+
+        if (simulateError) {
+            print("Error simulating transaction: " + simulateError.message, "error");
+            return;
+        }
+
+        if (!simulateData) {
+            print("Simulated data is unavailable. Please try again later.", "error");
+            return;
+        }
+
+        try {
+            await writeContract(simulateData.request);
+            print("Lending transaction submitted. Waiting for confirmation...", "info");
+        } catch (e) {
+            print("Failed to submit lending transaction: " + (e as Error).message, "error");
+        }
     };
+
 
     return (
         <div className="flex flex-col min-h-[100dvh]">
@@ -246,6 +294,7 @@ export default function LendingPage() {
                                                 <SelectItem value="3">3 months</SelectItem>
                                                 <SelectItem value="6">6 months</SelectItem>
                                                 <SelectItem value="12">12 months</SelectItem>
+                                                <SelectItem value="18">18 months</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -268,9 +317,9 @@ export default function LendingPage() {
                                     <Button
                                         type="submit"
                                         className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium"
-                                        disabled={!address}
+                                        disabled={!address || isConfirming}
                                     >
-                                        Lend
+                                        {isConfirming ? 'Confirming...' : 'Lend'}
                                     </Button>
                                 </div>
                             </form>

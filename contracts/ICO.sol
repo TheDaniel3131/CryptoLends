@@ -32,6 +32,7 @@ contract ICO is Pausable, Ownable {
         phaseCap[3] = 60000 * 10 ** 18; // 60,000 tokens
     }
 
+    // buyToken = lendToken
     function buyToken() external payable whenNotPaused {
         uint256 weiAmount = msg.value;
         require(weiAmount > 0, "Payment is required");

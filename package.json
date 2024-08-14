@@ -30,5 +30,8 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.5.2",
     "viem": "^2.7.6"
+  },
+  "dependencies": {
+    "kill-port": "^2.0.1"
   }
 }

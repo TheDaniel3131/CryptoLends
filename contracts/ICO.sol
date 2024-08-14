@@ -32,7 +32,7 @@ contract ICO is Pausable, Ownable {
         phaseCap[3] = 60000 * 10 ** 18; // 60,000 tokens
     }
 
-    // buyToken = lendToken
+    // buyToken = lendToken (this one is to convert the token to CLT)
     function buyToken() external payable whenNotPaused {
         uint256 weiAmount = msg.value;
         require(weiAmount > 0, "Payment is required");

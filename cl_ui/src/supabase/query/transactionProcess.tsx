@@ -1,20 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
 
-// const lender = '123 Test St';
-// const borrower = 'asd4a87878';
-// const amount = 100;
-// const contract = 'contract_123';
-// const durationMonth = 12;
-// const rate = 5.0;
-
-
-
 export async function transactionProcess(
     lender: string,
     borrower: string,
     amount: number,
-    contract: string,
+    currency: string,
     durationMonth: number,
     rate: number
 ): Promise<boolean> {
@@ -28,7 +19,7 @@ export async function transactionProcess(
         lender: lender,
         borrower: borrower,
         amount: amount,
-        contract: contract,
+        currency: currency,
         duration_month: durationMonth,
         rate: rate
     });

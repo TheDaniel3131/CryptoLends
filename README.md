@@ -1,6 +1,6 @@
 # CryptoLends: A Peer-to-Peer Decentralized Finance Lending Platform
 
-CryptoLends is a DeFi (Decentralized Finance) application that offers a decentralized peer-to-peer lending platform built mainly using NextJS, React, TypeScript, PostgreSQL/MySQL & Hardhat. It serves as a demonstration of how Hardhat can be utilized in real-world scenarios. The project includes a smart contract, a test suite for the contract, and a Hardhat Ignition module for deploying the contract.
+CryptoLends is a DeFi (Decentralized Finance) application that offers a decentralized peer-to-peer lending platform built mainly using NextJS, React, TypeScript, Supabase & Hardhat. It serves as a demonstration of how Hardhat can be utilized in real-world scenarios. The project includes a smart contract, a test suite for the contract, and a Hardhat Ignition module for deploying the contract.
 
 To get started with CryptoLends, you can try running some of the following tasks:
 

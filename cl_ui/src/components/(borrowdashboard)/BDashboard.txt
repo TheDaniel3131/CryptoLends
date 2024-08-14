@@ -266,7 +266,7 @@ export default function Component() {
                           <TableCell>{loan.duration_return}</TableCell>
                           <TableCell>{loan.interest_rate}</TableCell>
                           <TableCell>
-                          <Link href={`/bdetails`}>
+                          <Link href={`/bdetails/${loan.id}`}>
                               <Button>Details</Button>
                           </Link>
                           </TableCell>

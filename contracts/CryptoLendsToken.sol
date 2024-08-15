@@ -40,9 +40,9 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
         _unpause();
     }
 
-    // Request a loan
-    function requestLoan(uint _amount, uint _interest, uint _duration) external {
-        require(balanceOf(msg.sender) >= _amount, "Insufficient token balance for loan");
+    // borrow Token
+    function borrowToken(uint _amount, uint _interest, uint _duration) external {
+        require(balanceOf(msg.sender) >= _amount, "Insufficient token balance for borrowing");
         loans[nextLoanId] = Loan({
             id: nextLoanId,
             borrower: payable(msg.sender),
@@ -56,13 +56,13 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
     }
 
     // Fund a loan
-    function fundLoan(uint _loanId) external payable whenNotPaused {
-        Loan storage loan = loans[_loanId];
-        require(msg.value == loan.amount, "Incorrect loan amount");
-        require(loan.lender == address(0), "Loan already funded");
-        loan.lender = payable(msg.sender);
-        loan.borrower.transfer(msg.value);
-    }
+    // function fundLoan(uint _loanId) external payable whenNotPaused {
+    //     Loan storage loan = loans[_loanId];
+    //     require(msg.value == loan.amount, "Incorrect loan amount");
+    //     require(loan.lender == address(0), "Loan already funded");
+    //     loan.lender = payable(msg.sender);
+    //     loan.borrower.transfer(msg.value);
+    // }
 
     // Repay a loan
     function repayLoan(uint _loanId) external payable whenNotPaused {

@@ -18,18 +18,29 @@ export function Header() {
                 <Link href="/borrowdashboard" className="hover:underline underline-offset-4">
                     Borrow Now
                 </Link>
+                {isConnected && (
+                    <Link href="/repay" className="hover:underline underline-offset-4">
+                        Repay
+                    </Link>
+                )}
                 <Link href="/lend" className="hover:underline underline-offset-4">
                     Lending
                 </Link>
-                <Link href="/repay" className="hover:underline underline-offset-4">
-                    Repay
-                </Link>
-                <Link href="/about" className="hover:underline underline-offset-4">
-                    About Us
-                </Link>
-                <Link href="/contact" className="hover:underline underline-offset-4">
-                    Contact Us
-                </Link>
+                {isConnected && (
+                    <Link href="/withdrawal" className="hover:underline underline-offset-4">
+                        Withdrawal
+                    </Link>
+                )}
+                {!isConnected && (
+                    <>
+                        <Link href="/about" className="hover:underline underline-offset-4">
+                            About Us
+                        </Link>
+                        <Link href="/contact" className="hover:underline underline-offset-4">
+                            Contact Us
+                        </Link>
+                    </>
+                )}
                 {isConnected && (
                     <Link href="/dashboard" className="hover:underline underline-offset-4">
                         My Profile

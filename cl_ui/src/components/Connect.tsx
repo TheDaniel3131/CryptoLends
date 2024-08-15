@@ -25,7 +25,7 @@ export function Connect() {
     return (
         <div>
             <w3m-button
-                label={isConnected ? 'Connected' : 'Connect'}
+                label={isConnected ? 'Connected' : 'Connect Wallet'}
                 balance='hide'
                 size='md'
                 loadingLabel='Connecting'

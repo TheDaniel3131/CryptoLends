@@ -54,6 +54,20 @@ contract ICO is Pausable, Ownable {
         emit TokensPurchased(msg.sender, numberOfTokens, weiAmount);
     }
 
+    function borrowToken(uint256 amount) external whenNotPaused {
+        require(amount > 0, "Amount must be greater than zero");
+
+        uint256 currentPrice = basePrice * phasePriceMultiplier[salePhase] / 100;
+        uint256 weiAmount = amount * currentPrice / 10 ** 18;
+
+        require(address(this).balance >= weiAmount, "Insufficient balance in the contract");
+
+        token.transferFrom(msg.sender, owner(), amount);
+        payable(msg.sender).transfer(weiAmount);
+
+        emit TokensPurchased(msg.sender, amount, weiAmount);
+    }
+
     function pause() external onlyOwner {
         _pause();
     }

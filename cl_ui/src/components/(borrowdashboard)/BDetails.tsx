@@ -11,12 +11,22 @@ import { supabase } from '@/lib/supabaseClient'; // Ensure this import is correc
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 
 interface LoanDetails {
-  walletAddress: string;
-  loanAmount: number;
-  loanDuration: string;
-  cryptocurrencyType: string;
-  interestRate: number;
-  loanStatus: string;
+  cryptocurrency: string;
+  id: number;
+  lending_amount: number;
+  duration_return: number;
+  interest_rate: number;
+  loan_status: string;
+  status: string;
+  address: string;
+}
+
+// Function to shorten wallet address
+function shortenAddress(address: string): string {
+  if (address.length <= 10) {
+    return address;
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
 export function BDetails() {
@@ -32,6 +42,7 @@ export function BDetails() {
   const searchParams = useSearchParams();
   const loanId = searchParams.get('id') as string | undefined;
   console.log('Loan ID from URL:', loanId);
+  type LoanStatus = "Active" | "Pending" | "Completed";
 
   useEffect(() => {
     async function fetchLoanDetails() {
@@ -76,34 +87,34 @@ export function BDetails() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h2 className="text-lg font-bold">Lender Wallet Address</h2>
-                    <p>{loanDetails.walletAddress}</p>
+                    <p>{shortenAddress(loanDetails.address)}</p>
                   </div>
                   <div>
                     <h2 className="text-lg font-bold">Loan Amount</h2>
-                    <p>{loanDetails.loanAmount}</p>
+                    <p>{loanDetails.lending_amount} {loanDetails.cryptocurrency}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h2 className="text-lg font-bold">Loan Duration</h2>
-                    <p>{loanDetails.loanDuration}</p>
+                    <p>{loanDetails.duration_return} Month</p>
                   </div>
                   <div>
                     <h2 className="text-lg font-bold">Cryptocurrency Type</h2>
-                    <p>{loanDetails.cryptocurrencyType}</p>
+                    <p>Ethereum (ETH)</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h2 className="text-lg font-bold">Interest Rate</h2>
-                    <p>{loanDetails.interestRate}%</p>
+                    <p>{loanDetails.interest_rate}%</p>
                   </div>
                   <div>
                     <h2 className="text-lg font-bold">Status</h2>
                     <span
-                      className={`badge ${loanDetails.loanStatus === "Completed" ? "bg-green-500" : loanDetails.loanStatus === "Active" ? "bg-yellow-500" : "bg-gray-500"}`}
+                      className={`badge ${loanDetails.status === "Completed" ? "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-gray-500" : loanDetails.status === "Active" ? "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-green-500" : "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-red-500"}`}
                     >
-                      {loanDetails.loanStatus}
+                      {loanDetails.status}
                     </span>
                   </div>
                 </div>

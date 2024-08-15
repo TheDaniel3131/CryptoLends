@@ -1,193 +1,17 @@
 "use client";
 
+import { ethers } from 'ethers';
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { supabase } from '@/lib/supabaseClient'; // Ensure this import is correct
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-
-interface LoanDetails {
-  cryptocurrency: string;
-  id: number;
-  lending_amount: number;
-  duration_return: number;
-  interest_rate: number;
-  loan_status: string;
-  status: string;
-  address: string;
-}
-
-// Function to shorten wallet address
-function shortenAddress(address: string): string {
-  if (address.length <= 10) {
-    return address;
-  }
-  return `${address.slice(0, 6)}...${address.slice(-4)}`;
-}
-
-export function BDetails() {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "loanAmount", order: "desc" });
-  const [filters, setFilters] = useState({
-    loanStatus: [],
-    loanDuration: [],
-  });
-  const [loanDetails, setLoanDetails] = useState<LoanDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const searchParams = useSearchParams();
-  const loanId = searchParams.get('id') as string | undefined;
-  console.log('Loan ID from URL:', loanId);
-  type LoanStatus = "Active" | "Pending" | "Completed";
-
-  useEffect(() => {
-    async function fetchLoanDetails() {
-      if (!loanId) return;
-
-      const { data, error } = await supabase
-        .from('lending_list')
-        .select('*')
-        .eq('id', loanId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching loan details:', error);
-        setError(error.message);
-      } else {
-        console.log('Fetched loan details:', data);
-        setLoanDetails(data);
-      }
-
-      setLoading(false);
-    }
-
-    fetchLoanDetails();
-  }, [loanId]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!loanDetails) return <div>No loan details found</div>;
-
-  console.log('Loan Details:', loanDetails); 
-
-  return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <main className="flex-1">
-        <section className="bg-background py-12 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Loan Details</h1>
-            </div>
-            <div className="bg-background rounded-lg shadow-lg p-8 mx-auto max-w-2xl">
-              <div className="grid gap-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Lender Wallet Address</h2>
-                    <p>{shortenAddress(loanDetails.address)}</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Loan Amount</h2>
-                    <p>{loanDetails.lending_amount} {loanDetails.cryptocurrency}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Loan Duration</h2>
-                    <p>{loanDetails.duration_return} Month</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Cryptocurrency Type</h2>
-                    <p>Ethereum (ETH)</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Interest Rate</h2>
-                    <p>{loanDetails.interest_rate}%</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Status</h2>
-                    <span
-                      className={`badge ${loanDetails.status === "Completed" ? "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-gray-500" : loanDetails.status === "Active" ? "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-green-500" : "ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground bg-red-500"}`}
-                    >
-                      {loanDetails.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-center mt-8">
-                <Button>Borrow</Button>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-          <div className="max-w-3xl space-y-6 text-center">
-            <h2 className="text-3xl font-bold">How it Works</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <WalletIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Connect Wallet</h3>
-                <p className="text-muted-foreground">
-                  Connect your crypto wallet to our platform to start borrowing.
-                </p>
-              </div>
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <PercentIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Choose Loan Terms</h3>
-                <p className="text-muted-foreground">
-                  Select the asset, amount, and term that best suits your needs.
-                </p>
-              </div>
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <ReceiptIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Access Crypto Liquidity</h3>
-                <p className="text-muted-foreground">
-                  Receive the crypto you need to fund your projects or personal expenses.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Frequently Asked Questions Section */}
-        <section className="bg-background py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-          <div className="max-w-3xl space-y-6 text-center">
-            <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
-            <div className="grid gap-4">
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">What is the minimum amount I can borrow?</h3>
-                  <ChevronDownIcon className="h-5 w-5" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="bg-background p-4 rounded-xl">
-                  <p className="text-muted-foreground">
-                    The minimum amount you can borrow is $100.
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">How long does it take to get approved?</h3>
-                  <ChevronDownIcon className="h-5 w-5" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="bg-background p-4 rounded-xl">
-                  <p className="text-muted-foreground">
-                    Loan approval usually takes between 24 to 48 hours.
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
-            </div>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-}
+import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { ICOContractAddress } from '@/utils/smartContractAddress';
+import ico from '@/abi/ICO.json';
+import { parseEther } from 'viem';
+import { borrowingListInsert } from '../../supabase/query/borrowingListInsert';
+import { print } from "@/utils/toast";
 
 const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -308,6 +132,304 @@ const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
           <path d="m6 9 6 6 6-6" />
       </svg>
   )
+}
+
+
+interface LoanDetails {
+  cryptocurrency: string;
+  id: number;
+  lending_amount: number;
+  duration_return: number;
+  interest_rate: number;
+  loan_status: string;
+  status: string;
+  address: string;
+}
+
+// Function to shorten wallet address
+function shortenAddress(address: string): string {
+  if (address.length <= 10) {
+    return address;
+  }
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+
+
+export function BDetails() {
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ key: "loanAmount", order: "desc" });
+  const [filters, setFilters] = useState({
+    loanStatus: [],
+    loanDuration: [],
+  });
+  const [loanDetails, setLoanDetails] = useState<LoanDetails | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const loanId = searchParams.get('id') as string | undefined;
+  console.log('Loan ID from URL:', loanId);
+  type LoanStatus = "Active" | "Pending" | "Completed";
+
+  const { address } = useAccount();
+  const [borrowing_amount, setAmount] = useState<number>(0);
+  const [cryptocurrency, setContract] = useState('');
+  const [duration_return, setTerm] = useState<string>('1');
+  const [interest_rate, setRate] = useState<number>(0);
+  const [message, setMessage] = useState('');
+  const [borrowLoading, setBorrowLoading] = useState(false);
+  const [borrowError, setBorrowError] = useState<string | null>(null);
+  const router = useRouter();
+  
+
+  const { data: simulateData, error: simulateError } = useSimulateContract({
+      address: ICOContractAddress as `0x${string}`,
+      abi: ico.abi,
+      functionName: 'borrowToken',
+      value: parseEther(borrowing_amount.toString()),
+  })
+
+  const { data: hash, error: writeError, writeContract } = useWriteContract()
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+      useWaitForTransactionReceipt({
+          hash,
+      })
+
+  useEffect(() => {
+    async function fetchLoanDetails() {
+      if (!loanId) return;
+
+      const { data, error } = await supabase
+        .from('lending_list')
+        .select('*')
+        .eq('id', loanId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching loan details:', error);
+        setError(error.message);
+      } else {
+        console.log('Fetched loan details:', data);
+        setLoanDetails(data);
+      }
+
+      setLoading(false);
+    }
+
+    fetchLoanDetails();
+  }, [loanId]);
+
+  useEffect(() => {
+    if (isConfirmed && hash) {
+        borrowingListInsert(address!, borrowing_amount, cryptocurrency, parseInt(duration_return), interest_rate)
+            .then((result) => {
+                setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
+                print("Borrowing transaction confirmed and recorded in the database.", "success");
+            })
+            .catch((error) => {
+                console.error("Error inserting lending entry:", error);
+                print("Failed to record borrowing entry in the database.", "error");
+            });
+    }
+}, [isConfirmed, hash, address, borrowing_amount, cryptocurrency, duration_return, interest_rate]);
+  
+
+  const handleBorrow = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    // Check if the wallet is connected
+    if (!address) {
+        setBorrowError("Please connect your wallet first.");
+        return;
+    }
+
+    // Check if the loan details are available
+    if (!loanDetails) {
+        setBorrowError("No loan details available.");
+        return;
+    }
+
+    // Handle simulated error
+    if (simulateError) {
+        const errorMessage = simulateError.message || "Unknown error occurred during simulation.";
+        print("Error simulating transaction: " + errorMessage, "error");
+        return;
+    }
+
+    // Simulate data check
+    if (!simulateData) {
+        print("Simulated data is unavailable. Please try again later.", "error");
+        return;
+    }
+
+    // Begin the borrowing process
+    setBorrowLoading(true);
+    setBorrowError(null);
+
+    try {
+        // Trigger the contract interaction
+        const tx = await writeContract(simulateData.request);
+
+        // Wait for the transaction receipt
+        const receipt = await tx.wait();
+
+        if (receipt.status !== 1) {
+            throw new Error("Transaction failed.");
+        }
+        
+
+        // Insert borrowing details into Supabase
+        const insertSuccess = await borrowingListInsert({
+          loanId: loanDetails.id,
+          address: address,
+          amount: loanDetails.lending_amount,
+          duration_month: loanDetails.duration_return,
+          interest_rate: loanDetails.interest_rate,
+          currency: loanDetails.cryptocurrency,
+      });
+      
+      if (insertSuccess) {
+          console.log('Record inserted successfully');
+      } else {
+          console.error('Error inserting record');
+      }
+      
+        // Navigate to another page or show success message
+        router.push('/success');
+        print("Borrowing transaction submitted. Waiting for confirmation...", "info");
+    } catch (error) {
+        print("Failed to submit borrowing transaction: " + (error as Error).message, "error");
+        setBorrowError(error.message);
+    } finally {
+        setBorrowLoading(false);
+    }
+};
+
+
+  
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!loanDetails) return <div>No loan details found</div>;
+
+  console.log('Loan Details:', loanDetails); 
+
+  return (
+    <div className="flex flex-col min-h-[100dvh]">
+      <main className="flex-1">
+        <section className="bg-background py-12 px-6 md:px-12">
+          <div className="max-w-5xl mx-auto space-y-8">
+            <div className="flex items-center justify-between">
+              <h1 className="text-3xl font-bold">Loan Details</h1>
+            </div>
+            <div className="bg-background rounded-lg shadow-lg p-8 mx-auto max-w-2xl">
+              <div className="grid gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h2 className="text-lg font-bold">Lender Wallet Address</h2>
+                    <p>{shortenAddress(loanDetails.address)}</p>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">Loan Amount</h2>
+                    <p>{loanDetails.lending_amount} {loanDetails.cryptocurrency}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h2 className="text-lg font-bold">Loan Duration</h2>
+                    <p>{loanDetails.duration_return} Month</p>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">Cryptocurrency Type</h2>
+                    <p>Ethereum (ETH)</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h2 className="text-lg font-bold">Interest Rate</h2>
+                    <p>{loanDetails.interest_rate}%</p>
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold">Status</h2>
+                    <span
+                      className={`badge ${loanDetails.status === "Completed" ? "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-red-500" : loanDetails.status === "Active" ? "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-green-500" : "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-gray-500"}`}
+                    >
+                      {loanDetails.status}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center mt-8">
+                  <Button onClick={handleBorrow} disabled={borrowLoading || isConfirming}>
+                    {isConfirming ? 'Confirming...' : 'Borrow'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
+          <div className="max-w-3xl space-y-6 text-center">
+            <h2 className="text-3xl font-bold">How it Works</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="bg-background p-6 rounded-xl shadow-sm">
+                <WalletIcon className="h-8 w-8 mb-4 text-secondary" />
+                <h3 className="text-xl font-bold mb-2">Connect Wallet</h3>
+                <p className="text-muted-foreground">
+                  Connect your crypto wallet to our platform to start borrowing.
+                </p>
+              </div>
+              <div className="bg-background p-6 rounded-xl shadow-sm">
+                <PercentIcon className="h-8 w-8 mb-4 text-secondary" />
+                <h3 className="text-xl font-bold mb-2">Choose Loan Terms</h3>
+                <p className="text-muted-foreground">
+                  Select the asset, amount, and term that best suits your needs.
+                </p>
+              </div>
+              <div className="bg-background p-6 rounded-xl shadow-sm">
+                <ReceiptIcon className="h-8 w-8 mb-4 text-secondary" />
+                <h3 className="text-xl font-bold mb-2">Access Crypto Liquidity</h3>
+                <p className="text-muted-foreground">
+                  Receive the crypto you need to fund your projects or personal expenses.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Frequently Asked Questions Section */}
+        <section className="bg-background py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
+          <div className="max-w-3xl space-y-6 text-center">
+            <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
+            <div className="grid gap-4">
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
+                  <h3 className="text-lg font-bold">What is the minimum amount I can borrow?</h3>
+                  <ChevronDownIcon className="h-5 w-5" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="bg-background p-4 rounded-xl">
+                  <p className="text-muted-foreground">
+                    The minimum amount you can borrow is $100.
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
+              <Collapsible>
+                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
+                  <h3 className="text-lg font-bold">How long does it take to get approved?</h3>
+                  <ChevronDownIcon className="h-5 w-5" />
+                </CollapsibleTrigger>
+                <CollapsibleContent className="bg-background p-4 rounded-xl">
+                  <p className="text-muted-foreground">
+                    Loan approval usually takes between 24 to 48 hours.
+                  </p>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
 }
 
 export default BDetails;

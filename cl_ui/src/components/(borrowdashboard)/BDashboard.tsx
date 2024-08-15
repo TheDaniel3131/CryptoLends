@@ -138,7 +138,7 @@ export default function Component() {
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
-        <section className="bg-background-dark py-12 px-6 md:px-12">
+        <section className="bg-background-dark py-16 px-6 md:px-12">
           <div className="max-w-5xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Loan Dashboard</h1>
@@ -310,21 +310,56 @@ export default function Component() {
             </div>
           </div>
         </section>
+        <section className="bg-accent py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
+          <div className="max-w-3xl space-y-6 text-center">
+            <h2 className="text-3xl font-bold">Why Borrow with CryptoLends?</h2>
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="bg-card p-6 rounded-xl shadow-sm">
+                <PercentIcon className="h-8 w-8 mb-4 text-primary" />
+                <h3 className="text-xl font-bold mb-2">Competitive Rates</h3>
+                <p className="text-muted-foreground">
+                  Access crypto loans at some of the lowest interest rates in the industry.
+                </p>
+              </div>
+              <div className="bg-card p-6 rounded-xl shadow-sm">
+                <LockIcon className="h-8 w-8 mb-4 text-primary" />
+                <h3 className="text-xl font-bold mb-2">Secure Borrowing</h3>
+                <p className="text-muted-foreground">
+                  Your loan is secured by our robust smart contract system and audited platform.
+                </p>
+              </div>
+              <div className="bg-card p-6 rounded-xl shadow-sm">
+                <ClockIcon className="h-8 w-8 mb-4 text-primary" />
+                <h3 className="text-xl font-bold mb-2">Flexible Terms</h3>
+                <p className="text-muted-foreground">
+                  Choose from a variety of loan terms, from 1 month to 12 months, to fit your needs.
+                </p>
+              </div>
+              <div className="bg-card p-6 rounded-xl shadow-sm">
+                <WalletIcon className="h-8 w-8 mb-4 text-primary" />
+                <h3 className="text-xl font-bold mb-2">Easy Repayment</h3>
+                <p className="text-muted-foreground">
+                  Repay your loan at any time with no prepayment penalties or hidden fees.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
         <section className="bg-muted-dark py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
           <div className="max-w-3xl space-y-6 text-center">
             <h2 className="text-3xl font-bold">How it Works</h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-background-dark p-6 rounded-xl shadow-sm">
-                <WalletIcon className="h-8 w-8 mb-4 bg-" />
+              <div className="bg-muted p-6 rounded-xl shadow-sm">
+                <WalletIcon className="h-8 w-8 mb-4 text-primary" />
                 <h3 className="text-xl font-bold mb-2">Connect Wallet</h3>
                 <p className="text-muted-foreground">Connect your crypto wallet to our platform to start borrowing.</p>
               </div>
-              <div className="bg-background-dark p-6 rounded-xl shadow-sm">
+              <div className="bg-muted p-6 rounded-xl shadow-sm">
                 <PercentIcon className="h-8 w-8 mb-4 text-primary" />
                 <h3 className="text-xl font-bold mb-2">Choose Loan Terms</h3>
                 <p className="text-muted-foreground">Select the asset, amount, and term that best suits your needs.</p>
               </div>
-              <div className="bg-background-dark p-6 rounded-xl shadow-sm">
+              <div className="bg-muted p-6 rounded-xl shadow-sm">
                 <ReceiptIcon className="h-8 w-8 mb-4 text-primary" />
                 <h3 className="text-xl font-bold mb-2">Access Crypto Liquidity</h3>
                 <p className="text-muted-foreground">
@@ -334,14 +369,14 @@ export default function Component() {
             </div>
           </div>
         </section>
-        <section className="bg-background-dark py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
+        <section className="bg-accent py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
           <div className="max-w-3xl space-y-6 text-center">
             <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
             <div className="grid gap-4">
               <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-dark p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">What is the minimum amount I can borrow?</h3>
-                  <ChevronDownIcon className="h-6 w-6 text-muted-foreground" />
+                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-foreground p-4 rounded-xl">
+                  <h3 className="text-lg text-slate-100 font-bold">What is the minimum amount to borrow?</h3>
+                  <ChevronDownIcon className="h-6 w-6 text-muted-background" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="bg-background-dark p-4 rounded-xl">
                   <p className="text-muted-foreground">
@@ -350,9 +385,9 @@ export default function Component() {
                 </CollapsibleContent>
               </Collapsible>
               <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-dark p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">How do I repay my loan?</h3>
-                  <ChevronDownIcon className="h-6 w-6 text-muted-foreground" />
+                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-foreground p-4 rounded-xl">
+                  <h3 className="text-lg text-slate-100 font-bold">How do I repay my loan?</h3>
+                  <ChevronDownIcon className="h-6 w-6 text-muted-background" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="bg-background-dark p-4 rounded-xl">
                   <p className="text-muted-foreground">
@@ -362,9 +397,9 @@ export default function Component() {
                 </CollapsibleContent>
               </Collapsible>
               <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-dark p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">Is my collateral secure with CryptoLends?</h3>
-                  <ChevronDownIcon className="h-6 w-6 text-muted-foreground" />
+                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted-foreground p-4 rounded-xl">
+                  <h3 className="text-lg text-slate-100 font-bold">Is my collateral secure with CryptoLends?</h3>
+                  <ChevronDownIcon className="h-6 w-6 text-muted-background" />
                 </CollapsibleTrigger>
                 <CollapsibleContent className="bg-background-dark p-4 rounded-xl">
                   <p className="text-muted-foreground">

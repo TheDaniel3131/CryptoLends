@@ -2,6 +2,7 @@
 
 "use client";
 
+import BDetails from '@/components/(bdetails)/BDetails';
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -13,24 +14,30 @@ import { supabase } from '@/lib/supabaseClient'; // Make sure this import is cor
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 
 interface Loan {
+  cryptocurrency: string;
   id: number;
   lending_amount: number;
   duration_return: number;
   interest_rate: number;
   loan_status: string;
   status: string;
+  address: string;
+  
 }
 
 export default function Component() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
-  const [filters, setFilters] = useState({
+  type LoanStatus = "Active" | "Pending" | "Completed";
+  type LoanDuration = "6 months" | "9 months" | "12 months" | "18 months" | "24 months";
+  const [filters, setFilters] = useState<{
+    loanStatus: LoanStatus[],
+    loanDuration: LoanDuration[],
+  }>({
     loanStatus: [],
     loanDuration: [],
   });
-  const [loans, setLoans] = useState<Loan[]>([]);
-  
-  
+  const [loans, setLoans] = useState<Loan[]>([]); 
   
 
 
@@ -59,11 +66,12 @@ export default function Component() {
         const searchValue = search.toLowerCase();
   
         // Ensure loan and its properties are defined and of the correct type
-        const id = typeof loan.id === 'string' ? loan.id.toLowerCase() : '';
+        const id = typeof loan.id === 'number' ? loan.id.toString() : '';
         const loanStatus = typeof loan.loan_status === 'string' ? loan.loan_status.toLowerCase() : '';
         const lendingAmount = typeof loan.lending_amount === 'number' ? loan.lending_amount.toString() : '';
-        const durationReturn = typeof loan.duration_return === 'string' ? loan.duration_return.toLowerCase() : '';
+        const durationReturn = typeof loan.duration_return === 'number' ? loan.duration_return.toString() : '';
         const interestRate = typeof loan.interest_rate === 'number' ? loan.interest_rate.toString() : '';
+        const cryptocurrency = typeof loan.cryptocurrency === 'string' ? loan.cryptocurrency.toLowerCase() : '';
         
   
         return (
@@ -71,13 +79,14 @@ export default function Component() {
           loanStatus.includes(searchValue) ||
           lendingAmount.includes(searchValue) ||
           durationReturn.includes(searchValue) ||
-          interestRate.includes(searchValue)
+          interestRate.includes(searchValue) ||
+          cryptocurrency.includes(searchValue)
         );
       })
       .filter((loan) => {
         if (!loan) return false;
       
-        if (filters.loanStatus.length > 0 && !filters.loanStatus.includes(loan.status)) {
+        if (filters.loanStatus.length > 0 && !filters.loanStatus.includes(loan.status as LoanStatus)) {
           return false;
         }
         return true;
@@ -251,6 +260,7 @@ export default function Component() {
                       <TableHead>Loan Amount</TableHead>
                       <TableHead>Loan Duration</TableHead>
                       <TableHead>Interest Rate</TableHead>
+                      <TableHead>Cryptocurrency Type</TableHead>
                       <TableHead>Action</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -263,10 +273,11 @@ export default function Component() {
                             <Badge>{loan.status}</Badge>
                           </TableCell>
                           <TableCell>{loan.lending_amount}</TableCell>
-                          <TableCell>{loan.duration_return}</TableCell>
-                          <TableCell>{loan.interest_rate}</TableCell>
+                          <TableCell>{loan.duration_return} Month</TableCell>
+                          <TableCell>{loan.interest_rate}%</TableCell>
+                          <TableCell>{loan.cryptocurrency}</TableCell>
                           <TableCell>
-                          <Link href={`/bdetails`}>
+                          <Link href={`/bdetails?id=${loan.id}`}>
                               <Button>Details</Button>
                           </Link>
                           </TableCell>

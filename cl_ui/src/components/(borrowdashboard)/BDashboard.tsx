@@ -380,7 +380,7 @@ export default function Component() {
                 </CollapsibleTrigger>
                 <CollapsibleContent className="bg-background-dark p-4 rounded-xl">
                   <p className="text-muted-foreground">
-                    The minimum amount you can borrow is $100 or the equivalent in your chosen crypto asset.
+                    The minimum amount you can borrow is $100 or the equivalent in your chosen crypto asset such as Ethereum (ETH).
                   </p>
                 </CollapsibleContent>
               </Collapsible>

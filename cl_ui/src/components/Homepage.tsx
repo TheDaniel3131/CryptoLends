@@ -40,7 +40,7 @@ export function Homepage() {
               secure transactions. Start lending or borrowing today!
             </p>
             <div className="flex gap-4">
-              <Link href="/borrow" className="hover:underline underline-offset-4"><Button variant="secondary">Start Borrowing</Button></Link>
+              <Link href="/borrowdashboard" className="hover:underline underline-offset-4"><Button variant="secondary">Start Borrowing</Button></Link>
               <Link href="/lend" className="hover:underline underline-offset-4"><Button>Earn Through Lending</Button></Link>
             </div>
           </div>
@@ -106,15 +106,15 @@ export function Homepage() {
                 <ul className="space-y-2 mt-4">
                   <li>
                     <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
-                    Mobile app launch
+                    Cross-chain lending and borrowing
                   </li>
                   <li>
                     <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
-                    Expanded token support
+                    Enhanced token support
                   </li>
                   <li>
                     <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
-                    Improved user dashboard
+                    Modern, clean and improved user dashboard
                   </li>
                 </ul>
               </div>
@@ -122,15 +122,15 @@ export function Homepage() {
                 <h3 className="text-xl font-bold">2025</h3>
                 <ul className="space-y-2 mt-4">
                   <li>
-                    <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
+                    <CoinsIcon className="mr-2 inline-block h-5 w-5 text-primary" />
                     Decentralized governance model
                   </li>
                   <li>
-                    <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
-                    Cross-chain lending and borrowing
+                    <CoinsIcon className="mr-2 inline-block h-5 w-5 text-primary" />
+                    Mobile application launch
                   </li>
                   <li>
-                    <CheckIcon className="mr-2 inline-block h-5 w-5 text-primary" />
+                    <CoinsIcon className="mr-2 inline-block h-5 w-5 text-primary" />
                     Yield farming and staking options
                   </li>
                 </ul>

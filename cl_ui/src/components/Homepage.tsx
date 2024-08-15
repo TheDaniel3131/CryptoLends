@@ -64,7 +64,7 @@ export function Homepage() {
         <section className="py-16 px-6 md:px-12 bg-muted">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Key Features</h2>
+              <h2 className="text-3xl font-bold">CryptoLends&rsquo; Key Features</h2>
               <p className="text-muted-foreground">
                 CryptoLends offers a range of features to make your lending and borrowing experience seamless.
               </p>
@@ -97,7 +97,7 @@ export function Homepage() {
         <section className="py-16 px-6 md:px-12">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Roadmap</h2>
+              <h2 className="text-3xl font-bold">Our Roadmap</h2>
               <p className="text-muted-foreground">Check out our exciting roadmap for the future of CryptoLends.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

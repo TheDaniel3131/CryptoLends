@@ -1,10 +1,26 @@
 "use client"
 
-import React from 'react'
-import { useAccount } from 'wagmi'
+import React, { useEffect } from 'react';
+import { useAccount } from 'wagmi';
+import { createUserAddress } from '../supabase/query/createUserAddress';
 
 export function Connect() {
-    const { isConnected } = useAccount()
+    const { isConnected, address } = useAccount();
+
+    useEffect(() => {
+        const handleAddressUpdate = async (userAddress: string) => {
+            const success = await createUserAddress(userAddress);
+            if (success) {
+                console.log('Address updated successfully');
+            } else {
+                console.error('Error updating address');
+            }
+        };
+
+        if (isConnected && address) {
+            handleAddressUpdate(address);
+        }
+    }, [isConnected, address]);
 
     return (
         <div>
@@ -15,5 +31,5 @@ export function Connect() {
                 loadingLabel='Connecting'
             />
         </div>
-    )
+    );
 }

@@ -21,6 +21,9 @@ export function Header() {
                 <Link href="/lend" className="hover:underline underline-offset-4">
                     Lending
                 </Link>
+                <Link href="/repay" className="hover:underline underline-offset-4">
+                    Repay
+                </Link>
                 <Link href="/about" className="hover:underline underline-offset-4">
                     About Us
                 </Link>

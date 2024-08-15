@@ -1,17 +1,56 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/P3EKpBApw76
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+"use client"
+
+import { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { supabase } from '../../supabase/query/dashboard';
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 export default function Component(): JSX.Element {
+    const { address } = useAccount();
+    const [transactions, setTransactions] = useState([]);
+    const [debtAmount, setDebtAmount] = useState(0);
+    const [lendAmount, setLendAmount] = useState(0);
+
+    useEffect(() => {
+        const fetchBorrowingData = async () => {
+            if (!address) return;
+
+            try {
+                // Fetch debt amount from user_address table
+                const { data: userData, error: userError } = await supabase
+                    .from('user_address')
+                    .select('borrowing_amount')
+                    .eq('address', address)
+                    .single();
+
+                if (userError) throw userError;
+
+                setDebtAmount(userData?.borrowing_amount || 0);
+                setLendAmount(userData?.lending_amount || 0);
+
+                // Fetch borrowing history from transaction_record table
+                const { data: transactionsData, error: transactionsError } = await supabase
+                    .from('transaction_record')
+                    .select('*')
+                    .eq('address_borrower', address);
+
+                if (transactionsError) throw transactionsError;
+
+                setTransactions(transactionsData);
+            } catch (error) {
+                console.error('Error fetching data:', error.message);
+            }
+        };
+
+        fetchBorrowingData();
+    }, [address]);
+
     return (
         <div className="flex flex-col min-h-[100dvh]">
             <main className="flex-1">
@@ -26,7 +65,9 @@ export default function Component(): JSX.Element {
                                         <CardTitle>Current Debt</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
-                                        <div className="text-4xl font-bold">$2,500</div>
+                                        <div className="text-4xl font-bold">
+                                            {debtAmount} CLT
+                                        </div>
                                     </CardContent>
                                 </Card>
                                 <Card>
@@ -34,7 +75,9 @@ export default function Component(): JSX.Element {
                                         <CardTitle>Borrowing History</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
-                                        <div className="text-4xl font-bold">12 Loans</div>
+                                        <div className="text-4xl font-bold">
+                                            {transactions.length} Loans
+                                        </div>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -43,23 +86,13 @@ export default function Component(): JSX.Element {
                                     <CardTitle>Your Profile</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="name">Name</Label>
-                                            <Input id="name" type="text" value="John Doe" disabled />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" value="john@example.com" disabled />
-                                        </div>
-                                    </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="wallet">Wallet Address</Label>
-                                        <Input id="wallet" type="text" value="0x123456789abcdef" disabled />
+                                        <Input id="wallet" type="text" value={address || 'N/A'} disabled />
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="collateral">Collateral</Label>
-                                        <Input id="collateral" type="text" value="2.5 BTC" disabled />
+                                        <Input id="collateral" type="text" value={lendAmount + ' CLT'|| '0 CLT'} disabled />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -73,55 +106,34 @@ export default function Component(): JSX.Element {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Asset</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Term</TableHead>
-                                        <TableHead>Interest Rate</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Date</TableHead>
+                                        <TableHead className = 'text-center'>Asset</TableHead>
+                                        <TableHead className = 'text-center'>Amount</TableHead>
+                                        <TableHead className = 'text-center'>Term</TableHead>
+                                        <TableHead className = 'text-center'>Interest Rate</TableHead>
+                                        <TableHead className = 'text-center'>Status</TableHead>
+                                        <TableHead className = 'text-center'>Start Date</TableHead>
+                                        <TableHead className = 'text-center'>End Date</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>BTC</TableCell>
-                                        <TableCell>0.5</TableCell>
-                                        <TableCell>3 months</TableCell>
-                                        <TableCell>8.5%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">Repaid</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-04-15</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>ETH</TableCell>
-                                        <TableCell>2</TableCell>
-                                        <TableCell>6 months</TableCell>
-                                        <TableCell>7.2%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">Repaid</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-08-01</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>USDC</TableCell>
-                                        <TableCell>5,000</TableCell>
-                                        <TableCell>1 month</TableCell>
-                                        <TableCell>6.0%</TableCell>
-                                        <TableCell>
-                                            <Badge>Active</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-11-01</TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>DAI</TableCell>
-                                        <TableCell>1,000</TableCell>
-                                        <TableCell>3 months</TableCell>
-                                        <TableCell>7.5%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline">Pending</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-12-01</TableCell>
-                                    </TableRow>
+                                    {transactions.map((transaction) => (
+                                        <TableRow key={transaction.id}>
+                                            <TableCell>{transaction.cryptocurrency}</TableCell>
+                                            <TableCell>{transaction.token_amount} CLT</TableCell>
+                                            <TableCell>{transaction.term} month</TableCell>
+                                            <TableCell>{transaction.interest_rate}%</TableCell>
+                                            <TableCell>
+                                                <Badge className={transaction.status === 'Active' ? 'bg-blue-500 text-white'
+                                                    : transaction.status === 'Complete' ? 'bg-green-500 text-white'
+                                                    : transaction.status === 'Pending' ? 'bg-yellow-500 text-white'
+                                                    :''}>
+                                                    {transaction.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{transaction.lending_or_borrowing_start_date}</TableCell>
+                                            <TableCell>{transaction.lending_or_borrowing_end_date}</TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </div>
@@ -129,29 +141,5 @@ export default function Component(): JSX.Element {
                 </section>
             </main>
         </div>
-    )
-}
-
-interface CoinsIconProps extends React.SVGProps<SVGSVGElement> { }
-
-function CoinsIcon(props: CoinsIconProps): JSX.Element {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="8" cy="8" r="6" />
-            <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-            <path d="M7 6h1v4" />
-            <path d="m16.71 13.88.7.71-2.82 2.82" />
-        </svg>
-    )
+    );
 }

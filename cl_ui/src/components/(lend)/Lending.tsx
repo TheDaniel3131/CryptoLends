@@ -262,7 +262,7 @@ export default function LendingPage() {
                                                 <SelectValue placeholder="Select a contract" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="contract_1">Ethereum (ETH)</SelectItem>
+                                                <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>

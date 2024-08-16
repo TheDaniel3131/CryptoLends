@@ -280,14 +280,13 @@ export function BDetails() {
         
 
         // Insert borrowing details into Supabase
-        const insertSuccess = await borrowingListInsert({
-          loanId: loanDetails.id,
-          address: address,
-          amount: loanDetails.lending_amount,
-          duration_month: loanDetails.duration_return,
-          interest_rate: loanDetails.interest_rate,
-          currency: loanDetails.cryptocurrency,
-      });
+        const insertSuccess = await borrowingListInsert(
+          address,                       // Wallet address
+          loanDetails.lending_amount,     // Loan amount
+          loanDetails.cryptocurrency,     // Cryptocurrency type
+          loanDetails.duration_return,    // Loan duration
+          loanDetails.interest_rate       // Interest rate
+      );
       
       if (insertSuccess) {
           console.log('Record inserted successfully');

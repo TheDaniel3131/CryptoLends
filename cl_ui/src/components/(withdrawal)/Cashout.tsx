@@ -64,16 +64,6 @@ const CashOutPage: React.FC = () => {
                                     <CardTitle>Your Profile</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="name">Name</Label>
-                                            <Input id="name" type="text" value="John Doe" disabled />
-                                        </div>
-                                        <div className="grid gap-2">
-                                            <Label htmlFor="email">Email</Label>
-                                            <Input id="email" type="email" value="john@example.com" disabled />
-                                        </div>
-                                    </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="wallet">Wallet Address</Label>
                                         <Input id="wallet" type="text" value="0x123456789abcdef" disabled />

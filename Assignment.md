@@ -1,32 +1,36 @@
-# Frontend Commands
+# Project Setup Guidelines for All Users
+
+## Frontend Commands
 
 ### npx v0 add Sf3MALSwyYX
 
 The command `npx v0 add Sf3MALSwyYX` is used in the context of the `npx` tool, which is a package runner for Node.js. This specific command suggests that it's invoking an `npx` command related to a package or tool named `v0`, with an argument `add Sf3MALSwyYX`.
 
-# Backend Commands
+## Backend Commands
 
-### npx hardhat help
+#### npx hardhat help
 
 This command displays a list of available Hardhat commands and options. It's useful for getting help on how to use Hardhat and its various features.
 
-### npx hardhat node
+#### npx hardhat node
 
 This command starts a local Ethereum blockchain node using Hardhat. It's useful for testing and deploying contracts on a local network before interacting with a public testnet or mainnet.
 
-### npm run test
+#### npm run test
 
-This command runs the test suite defined in project's `package.json` file. Typically, it will execute test scripts written for smart contracts using a testing framework like Mocha or Chai.
+This command runs the test suite defined in project's `package.json` file. Typically, it will execute test scripts written for smart contracts.
 
-### npm run deploy
+#### npm run deploy
 
 This command runs the deployment script defined in `package.json`. It's used to deploy smart contracts to a blockchain network. The actual script and its content are defined in `package.json` or in a separate deployment script file.
 
-### npm run compile
+#### npm run compile
 
 This command compiles smart contracts. It runs the compile script defined in `package.json` and typically uses a tool like Hardhat or Truffle to compile the Solidity code into bytecode and ABI.
 
-# Supabase
+# Code Explanations
+
+# Database - Supabase
 
 ### insert_address
 

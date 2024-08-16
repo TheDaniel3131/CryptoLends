@@ -262,7 +262,7 @@ export default function LendingPage() {
                                                 <SelectValue placeholder="Select a contract" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="contract_1">Ethereum (ETH)</SelectItem>
+                                                <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -396,7 +396,7 @@ export default function LendingPage() {
                                 </CollapsibleTrigger>
                                 <CollapsibleContent className="bg-background p-4 rounded-xl">
                                     <p className="text-muted-foreground">
-                                        The minimum amount you can lend on our platform is $100 worth of any supported cryptocurrency.
+                                        The minimum amount you can lend on our platform is $100 worth of any supported cryptocurrency such as Ethereum (ETH).
                                     </p>
                                 </CollapsibleContent>
                             </Collapsible>

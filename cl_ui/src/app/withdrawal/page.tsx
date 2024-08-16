@@ -1,12 +1,12 @@
 import { Footer } from '@/components/Footer';
-import BorrowPage from '../../components/(borrow)/Borrowing';
+import WithdrawalPage from '../../components/(withdrawal)/Cashout';
 import { Header } from '@/components/Header';
 
-export default function Borrowing() {
+export default function Lending() {
     return (
         <div>
             <Header />
-            <BorrowPage />
+            <WithdrawalPage />
             <Footer />
         </div>
     )

@@ -133,7 +133,7 @@ export function showDisclaimer() {
       </p>
       <Button
         onClick={() => toast.dismiss()}
-        className="mt-4 bg-yellow-400 text-black"
+        className="mt-5 ml-2  bg-yellow-400 text-black"
       >
         I Understand
       </Button>

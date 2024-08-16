@@ -3,6 +3,8 @@ import { Button } from "@/app/ui/button";
 import { JSX, SVGProps, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { BuyToken } from './(buytoken)/BuyToken'; // Update path as needed
+import { SellToken } from './(selltoken)/SellToken'; // Update path as needed
 
 export function Homepage() {
   useEffect(() => {
@@ -119,6 +121,20 @@ export function Homepage() {
             </div>
           </div>
         </section>
+        <section className="py-16 px-6 md:px-12 bg-muted">
+          <div className="max-w-5xl mx-auto space-y-12">
+            <div className="text-center space-y-4">
+              <h2 className="text-3xl font-bold">Buy & Sell CryptoLends Tokens</h2>
+              <p className="text-muted-foreground">
+                Manage your CryptoLends tokens easily. Buy tokens to participate in lending and selling tokens to get liquidity.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <BuyToken />
+              <SellToken />
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   )
@@ -126,14 +142,14 @@ export function Homepage() {
 
 export function showDisclaimer() {
   toast.warn(
-    <div className="z-50">
+    <div className="z-100">
       <h2 className="text-xl font-bold mb-2">Disclaimer</h2>
       <p>
         At CryptoLends, we prioritize security through a multitude of measures, including audits, real-time monitoring, and robust security protocols. Despite these efforts, it&apos;s important to recognize that decentralized lending entails a level of risk due to potential undiscovered vulnerabilities. Exercise caution and engage only with funds that you can afford to lose. This message is not financial advice.
       </p>
       <Button
         onClick={() => toast.dismiss()}
-        className="mt-4 bg-yellow-400 text-black"
+        className="mt-5 ml-2 bg-yellow-400 text-black"
       >
         I Understand
       </Button>
@@ -159,38 +175,16 @@ function CheckIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
       fill="none"
+      viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <path d="M20 6 9 17l-5-5" />
+      <path d="M5 13l4 4L19 7" />
     </svg>
-  )
-}
-
-function CoinsIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="6" />
-      <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-      <path d="M7 6h1v4" />
-      <path d="m16.71 13.88.7.71-2.82 2.82" />
-    </svg>
-  )
+  );
 }
 
 function CurrencyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
@@ -200,18 +194,16 @@ function CurrencyIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) 
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
       fill="none"
+      viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M6 12h12" />
-      <path d="M12 6v12" />
+      <path d="M4 12h16M4 6h16M4 18h16" />
     </svg>
-  )
+  );
 }
 
 function LockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
@@ -221,15 +213,34 @@ function LockIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"
-      viewBox="0 0 24 24"
       fill="none"
+      viewBox="0 0 24 24"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     >
-      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+      <path d="M8 11V7a4 4 0 0 1 8 0v4" />
     </svg>
-  )
+  );
+}
+
+function CoinsIcon(props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M5 3v6a6 6 0 0 0 12 0V3m-2 4H7m8 5H7m8 5H7" />
+    </svg>
+  );
 }

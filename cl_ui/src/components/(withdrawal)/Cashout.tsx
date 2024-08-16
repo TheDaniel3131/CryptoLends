@@ -1,36 +1,73 @@
-import Link from "next/link";
+"use client";
+
+import { useState, useEffect } from "react";
+import { useAccount } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { withdrawToken } from "../../supabase/query/withdrawToken";
+import { transactionProcess } from "../../supabase/query/transactionProcess";
+import { createClient } from "@supabase/supabase-js";
 
-interface CoinsIconProps extends React.SVGProps<SVGSVGElement> { }
-
-const CoinsIcon: React.FC<CoinsIconProps> = (props) => {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="8" cy="8" r="6" />
-            <path d="M18.09 10.37A6 6 0 1 1 10.34 18" />
-            <path d="M7 6h1v4" />
-            <path d="m16.71 13.88.7.71-2.82 2.82" />
-        </svg>
-    );
-};
+interface Loan {
+    id: number;
+    asset: string;
+    amount: number;
+    term: string;
+    interest_rate: string;
+    status: string;
+    date: string;
+}
 
 const CashOutPage: React.FC = () => {
+    const { address: walletAddress } = useAccount(); // Get the connected wallet address from wagmi
+    const [loans, setLoans] = useState<Loan[]>([]);
+    const [totalFunds, setTotalFunds] = useState<number>(0);
+
+    useEffect(() => {
+        const fetchLoans = async () => {
+            if (!walletAddress) return; // Exit if no wallet address is connected
+
+            const supabaseUrl = "https://bqljlkdiicwfstzyesln.supabase.co";
+            const supabaseKey = "your_supabase_key";
+            const supabase = createClient(supabaseUrl, supabaseKey);
+
+            // Fetch active and pending loans for the connected wallet
+            const { data: loansData, error } = await supabase
+                .from("lending_loans") // Replace with your actual table name
+                .select("*")
+                .or(`borrower.eq.${walletAddress},lender.eq.${walletAddress}`);
+
+            if (error) {
+                console.error("Error fetching loans:", error.message);
+            } else {
+                setLoans(loansData || []);
+                calculateTotalFunds(loansData || []);
+            }
+        };
+
+        fetchLoans();
+    }, [walletAddress]);
+
+    const calculateTotalFunds = (loans: Loan[]) => {
+        const total = loans.reduce((acc, loan) => acc + (loan.status === "Active" || loan.status === "Pending" ? loan.amount : 0), 0);
+        setTotalFunds(total);
+    };
+
+    const handleWithdraw = async (loan: Loan) => {
+        if (!walletAddress) return; // Exit if no wallet address is connected
+
+        const success = await withdrawToken(walletAddress, loan.amount);
+        if (success) {
+            alert("Withdrawal successful!");
+        } else {
+            alert("Withdrawal failed.");
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-[100dvh]">
             <main className="flex-1">
@@ -47,7 +84,7 @@ const CashOutPage: React.FC = () => {
                                         <CardTitle>Total Funds to Withdraw</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
-                                        <div className="text-4xl font-bold">$5,000</div>
+                                        <div className="text-4xl font-bold">${totalFunds}</div>
                                     </CardContent>
                                 </Card>
                                 <Card>
@@ -55,7 +92,7 @@ const CashOutPage: React.FC = () => {
                                         <CardTitle>Lending Loans</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
-                                        <div className="text-4xl font-bold">8 Loans</div>
+                                        <div className="text-4xl font-bold">{loans.length} Loans</div>
                                     </CardContent>
                                 </Card>
                             </div>
@@ -66,7 +103,7 @@ const CashOutPage: React.FC = () => {
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="wallet">Wallet Address</Label>
-                                        <Input id="wallet" type="text" value="0x123456789abcdef" disabled />
+                                        <Input id="wallet" type="text" value={walletAddress || "Not Connected"} disabled />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -90,66 +127,30 @@ const CashOutPage: React.FC = () => {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    <TableRow>
-                                        <TableCell>BTC</TableCell>
-                                        <TableCell>0.5</TableCell>
-                                        <TableCell>3 months</TableCell>
-                                        <TableCell>8.5%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">Repaid</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-04-15</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm" disabled>
-                                                Withdraw
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>ETH</TableCell>
-                                        <TableCell>2</TableCell>
-                                        <TableCell>6 months</TableCell>
-                                        <TableCell>7.2%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="secondary">Repaid</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-08-01</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm" disabled>
-                                                Withdraw
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>USDC</TableCell>
-                                        <TableCell>5,000</TableCell>
-                                        <TableCell>1 month</TableCell>
-                                        <TableCell>6.0%</TableCell>
-                                        <TableCell>
-                                            <Badge>Active</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-11-01</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm">
-                                                Withdraw
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                    <TableRow>
-                                        <TableCell>DAI</TableCell>
-                                        <TableCell>1,000</TableCell>
-                                        <TableCell>3 months</TableCell>
-                                        <TableCell>7.5%</TableCell>
-                                        <TableCell>
-                                            <Badge variant="outline">Pending</Badge>
-                                        </TableCell>
-                                        <TableCell>2023-12-01</TableCell>
-                                        <TableCell>
-                                            <Button variant="outline" size="sm" disabled>
-                                                Withdraw
-                                            </Button>
-                                        </TableCell>
-                                    </TableRow>
+                                    {loans.map((loan) => (
+                                        <TableRow key={loan.id}>
+                                            <TableCell>{loan.asset}</TableCell>
+                                            <TableCell>{loan.amount}</TableCell>
+                                            <TableCell>{loan.term}</TableCell>
+                                            <TableCell>{loan.interest_rate}</TableCell>
+                                            <TableCell>
+                                                <Badge variant={loan.status === "Repaid" ? "secondary" : loan.status === "Active" ? "default" : "outline"}>
+                                                    {loan.status}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell>{loan.date}</TableCell>
+                                            <TableCell>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => handleWithdraw(loan)}
+                                                    disabled={loan.status !== "Repaid"}
+                                                >
+                                                    Withdraw
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                             </Table>
                         </div>

@@ -149,9 +149,29 @@ npx hardhat --version
 
 - **Purpose**: Verifies the installed version of Hardhat, ensuring that the setup is correct.
 
-# Code Implementation Explanations with Screenshots
+# System Architecture Overview
 
-# Database - Supabase
+![](https://cdn.discordapp.com/attachments/1245646552257658934/1273878057333297223/Blockchain_Assignment_Structure.jpg?ex=66c036e4&is=66bee564&hm=160de16a97ffdc1ef0319b5196c181eed3905a6f2a5a487199ee9b4513e27b45&=)
+
+The project is a peer-to-peer lending platform where lenders and borrowers can transact in Ethereum. The system architecture includes several key pages:
+
+The **contact page** features a form that allows users to send messages to other users based on the provided email address. This functionality is implemented using Formspree APIs.
+
+The **withdraw page** includes a table for borrowers to convert loaned tokens into Ethereum. The withdrawal function calls a query function from Supabase, and the corresponding amount in the `user_address` table is deducted accordingly.
+
+The **lending page** provides a table where lenders can submit lending requests, specifying the lending duration and interest rate. Submitted forms are sent to the backend and subsequently to a smart contract to insert the data into the lending list table. The lending status is updated to "active" to indicate that the amount is available for borrowing. Additionally, the user status is updated to reflect whether they are a lender or borrower. Borrowers cannot use the lending page functions until they have repaid their previous loans.
+
+The **borrowing page** displays a list of available lending opportunities. Borrowers can view detailed information about each lending option and choose to borrow the amount if desired. When a borrower proceeds, the data is sent to the smart contract to update both the lender's and borrower's amounts, and the transaction is recorded in the Supabase table. The lending status changes from "active" to "pending" to notify the lender that their amount has been borrowed.
+
+The **about us page** provides information about the platform and does not interact with any backend functionality.
+
+The **repay page** features a table for borrowers to repay their loans, including interest. If the borrower has any outstanding loans, the details are displayed in the table. Upon repayment, the borrower's amount is deducted by the total repayment amount (principal plus interest), and the lender's amount is increased accordingly. The lending status updates from "pending" to "complete" to indicate that the repayment has been made. The statuses of the borrower and lender are also reset, allowing the borrower to use the lending page functions again.
+
+The **user profile page** is displayed after the user logs into their MetaMask account. MetaMask integration is managed through APIs. Upon login, the system checks if the user's address exists in the Supabase table. If not, the address is inserted into the table. Users can view their profile details on this page.
+
+## Code Implementation Explanations with Screenshots
+
+### Database - Supabase
 
 ### insert_address
 
@@ -478,23 +498,3 @@ Overall, the `AboutUsPage` is both informative and user-friendly, featuring clea
 #### References
 
 ##### Repository: [CryptoLends](https://github.com/TheDaniel3131/CryptoLends)
-
-# System Architecture Overview
-
-![](https://cdn.discordapp.com/attachments/1245646552257658934/1273878057333297223/Blockchain_Assignment_Structure.jpg?ex=66c036e4&is=66bee564&hm=160de16a97ffdc1ef0319b5196c181eed3905a6f2a5a487199ee9b4513e27b45&=)
-
-The project is a peer-to-peer lending platform where lenders and borrowers can transact in Ethereum. The system architecture includes several key pages:
-
-The **contact page** features a form that allows users to send messages to other users based on the provided email address. This functionality is implemented using Formspree APIs.
-
-The **withdraw page** includes a table for borrowers to convert loaned tokens into Ethereum. The withdrawal function calls a query function from Supabase, and the corresponding amount in the `user_address` table is deducted accordingly.
-
-The **lending page** provides a table where lenders can submit lending requests, specifying the lending duration and interest rate. Submitted forms are sent to the backend and subsequently to a smart contract to insert the data into the lending list table. The lending status is updated to "active" to indicate that the amount is available for borrowing. Additionally, the user status is updated to reflect whether they are a lender or borrower. Borrowers cannot use the lending page functions until they have repaid their previous loans.
-
-The **borrowing page** displays a list of available lending opportunities. Borrowers can view detailed information about each lending option and choose to borrow the amount if desired. When a borrower proceeds, the data is sent to the smart contract to update both the lender's and borrower's amounts, and the transaction is recorded in the Supabase table. The lending status changes from "active" to "pending" to notify the lender that their amount has been borrowed.
-
-The **about us page** provides information about the platform and does not interact with any backend functionality.
-
-The **repay page** features a table for borrowers to repay their loans, including interest. If the borrower has any outstanding loans, the details are displayed in the table. Upon repayment, the borrower's amount is deducted by the total repayment amount (principal plus interest), and the lender's amount is increased accordingly. The lending status updates from "pending" to "complete" to indicate that the repayment has been made. The statuses of the borrower and lender are also reset, allowing the borrower to use the lending page functions again.
-
-The **user profile page** is displayed after the user logs into their MetaMask account. MetaMask integration is managed through APIs. Upon login, the system checks if the user's address exists in the Supabase table. If not, the address is inserted into the table. Users can view their profile details on this page.

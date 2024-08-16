@@ -1,34 +1,153 @@
 # Project Setup Guidelines for All Users
 
+To run CryptoLends project locally, feel free to follow the steps below to set up both the frontend and backend components of the project. You must have Visual Studio Code, Git or Hardhat installed beforehand. There are tons of resources available online that guide on how to install these tools.
+
+- VSCode: https://code.visualstudio.com/download
+
+- Git: https://git-scm.com/downloads
+
 ## Frontend Commands
 
-### npx v0 add Sf3MALSwyYX
+### Clone CryptoLends Repository
 
-The command `npx v0 add Sf3MALSwyYX` is used in the context of the `npx` tool, which is a package runner for Node.js. This specific command suggests that it's invoking an `npx` command related to a package or tool named `v0`, with an argument `add Sf3MALSwyYX`.
+**Step 1: Initialize Git Repository**
+
+```bash
+git init
+```
+
+Purpose: Initializes a new Git repository in your project directory. This is the first step in setting up version control.
+
+**Step 2: Add Remote Repository**
+
+```bash
+git remote add origin https://github.com/TheDaniel3131/CryptoLends.git
+```
+
+Purpose: Links your local Git repository to the remote repository on GitHub. Replace the URL with the correct remote repository URL if different.
+
+**Step 3: Pull Latest Changes**
+
+```bash
+git pull origin main
+```
+
+Purpose: Fetches and merges the latest changes from the main branch of the remote repository into your local repository.
+
+**Step 4: Install Dependencies**
+
+```bash
+npm install
+```
+
+or
+
+```bash
+npm i
+```
+
+Purpose: Installs all the necessary dependencies for the project as defined in the package.json file.
+
+**Step 5: Start the Frontend Development Server**
+
+```bash
+cd cl_ui
+npm run dev
+```
+
+Purpose: Navigates to the frontend directory and starts the development server. This allows you to preview the application locally as you make changes.
+
+**Step 6: Add Frontend-Specific Tools or Packages**
+
+Make sure you are in "cl_ci" folder!
+
+```bash
+npx v0 add Sf3MALSwyYX
+```
+
+Purpose: Executes an npx command to add a specific package or tool (v0). Ensure that you have the correct permissions and context for this command.
 
 ## Backend Commands
 
-#### npx hardhat help
+**Step 1: Get Help with Hardhat**
 
-This command displays a list of available Hardhat commands and options. It's useful for getting help on how to use Hardhat and its various features.
+```bash
+npx hardhat help
+```
 
-#### npx hardhat node
+Purpose: Displays a list of available Hardhat commands and options. Use this command if you need guidance on how to use Hardhat features.
 
-This command starts a local Ethereum blockchain node using Hardhat. It's useful for testing and deploying contracts on a local network before interacting with a public testnet or mainnet.
+**Step 2: Start a Local Blockchain Node**
 
-#### npm run test
+```bash
+npx hardhat node
+```
 
-This command runs the test suite defined in project's `package.json` file. Typically, it will execute test scripts written for smart contracts.
+Purpose: Starts a local Ethereum blockchain node using Hardhat. This is crucial for local testing and deploying smart contracts before interacting with a live network.
 
-#### npm run deploy
+**Step 3: Run the Test Suite**
 
-This command runs the deployment script defined in `package.json`. It's used to deploy smart contracts to a blockchain network. The actual script and its content are defined in `package.json` or in a separate deployment script file.
+```bash
+npm run test
+```
 
-#### npm run compile
+Purpose: Executes the project's test suite to validate the functionality of smart contracts. Ensure your test scripts are properly configured to cover all essential use cases.
 
-This command compiles smart contracts. It runs the compile script defined in `package.json` and typically uses a tool like Hardhat or Truffle to compile the Solidity code into bytecode and ABI.
+**Step 4: Compile Smart Contracts**
 
-# Code Explanations
+```bash
+npm run compile
+```
+
+Purpose: Compiles the Solidity smart contracts into bytecode and ABI using Hardhat. This step must be completed before testing or deploying your contracts.
+
+**Step 5: Deploy Smart Contracts**
+
+```bash
+npm run deploy
+```
+
+Purpose: Runs the deployment script to deploy your smart contracts to a blockchain network. Make sure the deployment settings are correctly configured in the script.
+
+For hardhat, you do not really have to run these commands if you clone the repository, but if you need these then here you go:
+
+### Misc:
+
+#### Hardhat Commands:
+
+#### Step 1: Initialize the Backend Project
+
+```bash
+npm init -y
+```
+
+- **Purpose**: Initializes a new Node.js project with default settings by creating a `package.json` file.
+
+#### Step 2: Install Hardhat as a Dev Dependency
+
+```bash
+npm install --save-dev hardhat
+```
+
+- **Purpose**: Installs Hardhat as a development dependency, a tool for smart contract development.
+
+#### Step 3: Initialize Hardhat
+
+```bash
+npx hardhat init
+```
+
+- **Purpose**: Initializes the Hardhat environment, creating the basic directory structure and configuration files for smart contract development.
+
+#### Step 4: Check Hardhat Version
+
+```bash
+npx hardhat --version
+```
+
+- **Purpose**: Verifies the installed version of Hardhat, ensuring that the setup is correct.
+
+# Code Implementation Explanations with Screenshots
 
 # Database - Supabase
 
@@ -357,3 +476,23 @@ Overall, the `AboutUsPage` is both informative and user-friendly, featuring clea
 #### References
 
 ##### Repository: [CryptoLends](https://github.com/TheDaniel3131/CryptoLends)
+
+# System Architecture Overview
+
+![](https://cdn.discordapp.com/attachments/1245646552257658934/1273878057333297223/Blockchain_Assignment_Structure.jpg?ex=66c036e4&is=66bee564&hm=160de16a97ffdc1ef0319b5196c181eed3905a6f2a5a487199ee9b4513e27b45&=)
+
+The project is a peer-to-peer lending platform where lenders and borrowers can transact in Ethereum. The system architecture includes several key pages:
+
+The **contact page** features a form that allows users to send messages to other users based on the provided email address. This functionality is implemented using Formspree APIs.
+
+The **withdraw page** includes a table for borrowers to convert loaned tokens into Ethereum. The withdrawal function calls a query function from Supabase, and the corresponding amount in the `user_address` table is deducted accordingly.
+
+The **lending page** provides a table where lenders can submit lending requests, specifying the lending duration and interest rate. Submitted forms are sent to the backend and subsequently to a smart contract to insert the data into the lending list table. The lending status is updated to "active" to indicate that the amount is available for borrowing. Additionally, the user status is updated to reflect whether they are a lender or borrower. Borrowers cannot use the lending page functions until they have repaid their previous loans.
+
+The **borrowing page** displays a list of available lending opportunities. Borrowers can view detailed information about each lending option and choose to borrow the amount if desired. When a borrower proceeds, the data is sent to the smart contract to update both the lender's and borrower's amounts, and the transaction is recorded in the Supabase table. The lending status changes from "active" to "pending" to notify the lender that their amount has been borrowed.
+
+The **about us page** provides information about the platform and does not interact with any backend functionality.
+
+The **repay page** features a table for borrowers to repay their loans, including interest. If the borrower has any outstanding loans, the details are displayed in the table. Upon repayment, the borrower's amount is deducted by the total repayment amount (principal plus interest), and the lender's amount is increased accordingly. The lending status updates from "pending" to "complete" to indicate that the repayment has been made. The statuses of the borrower and lender are also reset, allowing the borrower to use the lending page functions again.
+
+The **user profile page** is displayed after the user logs into their MetaMask account. MetaMask integration is managed through APIs. Upon login, the system checks if the user's address exists in the Supabase table. If not, the address is inserted into the table. Users can view their profile details on this page.

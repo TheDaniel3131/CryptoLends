@@ -1,77 +1,85 @@
-// SPDX-License-Identifier: GPL-3.0
-// Compatible with OpenZeppelin Contracts ^5.0.0
-
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 
-contract ICO is Pausable, Ownable {
-    IERC20 public token;
-    uint public basePrice = 1 ether; // Base price in wei
-    uint public totalTokensSold;
-    uint public salePhase = 1;
-
-    mapping(uint => uint) public phasePriceMultiplier; // Phase-specific price multipliers
-    mapping(uint => uint) public phaseCap; // Token caps for each phase
-
-    event TokensPurchased(address indexed buyer, uint256 amount, uint256 cost);
-
-    constructor(address _tokenAddress) Ownable(msg.sender) {
-        token = IERC20(_tokenAddress);
-
-        // Setting up sale phases with different multipliers and caps
-        phasePriceMultiplier[1] = 100; // 1x base price
-        phaseCap[1] = 10000 * 10 ** 18; // 10,000 tokens
-
-        phasePriceMultiplier[2] = 150; // 1.5x base price
-        phaseCap[2] = 30000 * 10 ** 18; // 30,000 tokens
-
-        phasePriceMultiplier[3] = 200; // 2x base price
-        phaseCap[3] = 60000 * 10 ** 18; // 60,000 tokens
+contract CryptoLendsToken is ERC20, Ownable, Pausable {
+    struct Loan {
+        uint id;
+        address payable borrower;
+        address payable lender;
+        uint amount;
+        uint interest;
+        uint duration;
+        bool repaid;
     }
 
-    // buyToken = lendToken (this one is to convert the token to CLT)
-    function buyToken() external payable whenNotPaused {
-        uint256 weiAmount = msg.value;
-        require(weiAmount > 0, "Payment is required");
+    uint public nextLoanId;
+    mapping(uint => Loan) public loans;
 
-        uint256 currentPrice = basePrice * phasePriceMultiplier[salePhase] / 100;
-        uint256 numberOfTokens = weiAmount * 10 ** 18 / currentPrice;
-
-        require(token.balanceOf(owner()) >= numberOfTokens, "Insufficient tokens available for sale");
-        require(totalTokensSold + numberOfTokens <= phaseCap[salePhase], "Phase token cap exceeded");
-
-        token.transferFrom(owner(), msg.sender, numberOfTokens);
-        totalTokensSold += numberOfTokens;
-
-        // Move to the next phase if the cap is reached
-        if (totalTokensSold >= phaseCap[salePhase] && salePhase < 3) {
-            salePhase++;
-        }
-
-        emit TokensPurchased(msg.sender, numberOfTokens, weiAmount);
+    constructor(address initialOwner) ERC20("CryptoLendsToken", "CLT") Ownable(initialOwner) {
+        _mint(initialOwner, 1000000 * 10 ** decimals());
     }
 
-    function pause() external onlyOwner {
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    function pause() public onlyOwner {
         _pause();
     }
 
-    function unpause() external onlyOwner {
+    function unpause() public onlyOwner {
         _unpause();
     }
 
-    function withdrawal() external onlyOwner {
+    function requestLoan(uint _amount, uint _interest, uint _duration) external {
+        require(balanceOf(msg.sender) >= _amount, "Insufficient token balance");
+        loans[nextLoanId] = Loan({
+            id: nextLoanId,
+            borrower: payable(msg.sender),
+            lender: payable(address(0)),
+            amount: _amount,
+            interest: _interest,
+            duration: _duration,
+            repaid: false
+        });
+        nextLoanId++;
+    }
+
+    function fundLoan(uint _loanId) external payable whenNotPaused {
+        Loan storage loan = loans[_loanId];
+        require(msg.value == loan.amount, "Incorrect loan amount");
+        require(loan.lender == address(0), "Loan already funded");
+        loan.lender = payable(msg.sender);
+        loan.borrower.transfer(msg.value);
+    }
+
+    function repayLoan(uint _loanId) external payable whenNotPaused {
+        Loan storage loan = loans[_loanId];
+        require(msg.sender == loan.borrower, "Only borrower can repay");
+        require(!loan.repaid, "Loan already repaid");
+        require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
+        loan.lender.transfer(msg.value);
+        loan.repaid = true;
+    }
+
+    function buyToken() external payable whenNotPaused {
+        require(msg.value > 0, "Need to send ETH to buy tokens");
+        uint256 tokens = msg.value * 100;
+        _mint(msg.sender, tokens);
+    }
+
+    function sellToken(uint256 amount) external whenNotPaused {
+        require(balanceOf(msg.sender) >= amount, "Insufficient token balance");
+        uint256 ethAmount = amount / 100;
+        _burn(msg.sender, amount);
+        payable(msg.sender).transfer(ethAmount);
+    }
+
+    function withdraw() external onlyOwner {
         payable(owner()).transfer(address(this).balance);
-    }
-
-    function setPhase(uint _phase, uint _multiplier, uint _cap) external onlyOwner {
-        phasePriceMultiplier[_phase] = _multiplier;
-        phaseCap[_phase] = _cap;
-    }
-
-    function setBasePrice(uint _newBasePrice) external onlyOwner {
-        basePrice = _newBasePrice;
     }
 }

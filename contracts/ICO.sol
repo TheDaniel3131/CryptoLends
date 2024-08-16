@@ -17,6 +17,7 @@ contract ICO is Pausable, Ownable {
     mapping(uint => uint) public phaseCap; // Token caps for each phase
 
     event TokensPurchased(address indexed buyer, uint256 amount, uint256 cost);
+    event TokensSold(address indexed seller, uint256 amount, uint256 revenue);
 
     constructor(address _tokenAddress) Ownable(msg.sender) {
         token = IERC20(_tokenAddress);
@@ -32,8 +33,46 @@ contract ICO is Pausable, Ownable {
         phaseCap[3] = 60000 * 10 ** 18; // 60,000 tokens
     }
 
-    // buyToken = lendToken (this one is to convert the token to CLT)
-    function buyToken() external payable whenNotPaused {
+    // Buy tokens
+    function buyToken(uint256 amount) external payable whenNotPaused {
+        require(amount > 0, "Amount must be greater than zero");
+
+        uint256 currentPrice = basePrice * phasePriceMultiplier[salePhase] / 100;
+        uint256 weiAmount = amount * currentPrice / 10 ** 18;
+
+        require(msg.value == weiAmount, "Incorrect ETH amount sent");
+        require(token.balanceOf(owner()) >= amount, "Insufficient tokens available for sale");
+        require(totalTokensSold + amount <= phaseCap[salePhase], "Phase token cap exceeded");
+
+        token.transferFrom(owner(), msg.sender, amount);
+        totalTokensSold += amount;
+
+        // Move to the next phase if the cap is reached
+        if (totalTokensSold >= phaseCap[salePhase] && salePhase < 3) {
+            salePhase++;
+        }
+
+        emit TokensPurchased(msg.sender, amount, weiAmount);
+    }
+
+    // Sell tokens
+    function sellToken(uint256 amount) external whenNotPaused {
+        require(amount > 0, "Amount must be greater than zero");
+        require(token.balanceOf(msg.sender) >= amount, "Insufficient token balance");
+
+        uint256 currentPrice = basePrice * phasePriceMultiplier[salePhase] / 100;
+        uint256 weiAmount = amount * currentPrice / 10 ** 18;
+
+        require(address(this).balance >= weiAmount, "Insufficient ETH balance in the contract");
+
+        token.transferFrom(msg.sender, owner(), amount);
+        payable(msg.sender).transfer(weiAmount);
+
+        emit TokensSold(msg.sender, amount, weiAmount);
+    }
+
+    // lendToken (this one is to convert the token to CLT)
+    function lendToken() external payable whenNotPaused {
         uint256 weiAmount = msg.value;
         require(weiAmount > 0, "Payment is required");
 

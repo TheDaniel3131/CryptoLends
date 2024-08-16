@@ -171,7 +171,7 @@ export default function LendingPage() {
     const { data: simulateData, error: simulateError } = useSimulateContract({
         address: ICOContractAddress as `0x${string}`,
         abi: ico.abi,
-        functionName: 'buyToken',
+        functionName: 'lendToken',
         value: parseEther(amount.toString()),
     })
 

@@ -226,7 +226,7 @@ export function BDetails() {
         });
     }
   }, [isConfirmed, hash, address, loanDetails]);
-  
+
 
   const handleBorrow = async (event: React.FormEvent) => {
     event.preventDefault();

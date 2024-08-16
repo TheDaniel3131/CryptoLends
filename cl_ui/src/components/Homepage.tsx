@@ -126,7 +126,7 @@ export function Homepage() {
 
 export function showDisclaimer() {
   toast.warn(
-    <div className="z-50">
+    <div className="z-100">
       <h2 className="text-xl font-bold mb-2">Disclaimer</h2>
       <p>
         At CryptoLends, we prioritize security through a multitude of measures, including audits, real-time monitoring, and robust security protocols. Despite these efforts, it&apos;s important to recognize that decentralized lending entails a level of risk due to potential undiscovered vulnerabilities. Exercise caution and engage only with funds that you can afford to lose. This message is not financial advice.

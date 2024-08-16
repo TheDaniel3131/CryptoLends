@@ -34,25 +34,12 @@ contract ICO is Pausable, Ownable {
     }
 
     // Buy tokens
-    function buyToken(uint256 amount) external payable whenNotPaused {
-        require(amount > 0, "Amount must be greater than zero");
+    function buyToken() external payable whenNotPaused {
+        uint256 weiAmount = msg.value;
+        uint256 numberOfToken = weiAmount / basePrice * 10 ** 18;
 
-        uint256 currentPrice = basePrice * phasePriceMultiplier[salePhase] / 100;
-        uint256 weiAmount = amount * currentPrice / 10 ** 18;
-
-        require(msg.value == weiAmount, "Incorrect ETH amount sent");
-        require(token.balanceOf(owner()) >= amount, "Insufficient tokens available for sale");
-        require(totalTokensSold + amount <= phaseCap[salePhase], "Phase token cap exceeded");
-
-        token.transferFrom(owner(), msg.sender, amount);
-        totalTokensSold += amount;
-
-        // Move to the next phase if the cap is reached
-        if (totalTokensSold >= phaseCap[salePhase] && salePhase < 3) {
-            salePhase++;
-        }
-
-        emit TokensPurchased(msg.sender, amount, weiAmount);
+        token.transferFrom(owner(), msg.sender, numberOfToken);
+        totalTokensSold += numberOfToken;
     }
 
     // Sell tokens

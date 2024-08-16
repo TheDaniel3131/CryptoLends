@@ -40,9 +40,9 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
         _unpause();
     }
 
-    // Borrow tokens
-    function borrowToken(uint _amount, uint _interest, uint _duration) external whenNotPaused {
-        require(balanceOf(msg.sender) >= _amount, "Insufficient token balance for borrowing");
+    // Request a loan
+    function requestLoan(uint _amount, uint _interest, uint _duration) external {
+        require(balanceOf(msg.sender) >= _amount, "Insufficient token balance for loan");
         loans[nextLoanId] = Loan({
             id: nextLoanId,
             borrower: payable(msg.sender),
@@ -60,25 +60,29 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
         Loan storage loan = loans[_loanId];
         require(msg.value == loan.amount, "Incorrect loan amount");
         require(loan.lender == address(0), "Loan already funded");
-        require(!loan.repaid, "Loan already repaid");
-        
         loan.lender = payable(msg.sender);
         loan.borrower.transfer(msg.value);
     }
 
     // Repay a loan
-    function repayLoan(uint _loanId) external payable whenNotPaused {
-        Loan storage loan = loans[_loanId];
-        require(msg.sender == loan.borrower, "Only borrower can repay");
-        require(!loan.repaid, "Loan already repaid");
-        require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
-        
-        loan.lender.transfer(msg.value);
-        loan.repaid = true;
-    }
+    event LoanRepaid(address borrower, address lender, uint256 amount);
+
+function repayLoan(uint _loanId) external payable whenNotPaused {
+    Loan storage loan = loans[_loanId];
+    
+    require(msg.sender == loan.borrower, "Only borrower can repay");
+    require(!loan.repaid, "Loan already repaid");
+    require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
+    
+    loan.lender.transfer(msg.value);  // Transfer funds to lender
+    loan.repaid = true;  // Mark the loan as repaid
+    
+    emit LoanRepaid(msg.sender, loan.lender, msg.value);  // Emit event for logging
+}
+
 
     // Buy tokens
-    function buyToken() external payable whenNotPaused {
+    function buyTokens() external payable whenNotPaused {
         require(msg.value > 0, "Need to send ETH to buy tokens");
         uint256 tokens = msg.value * 100; // Example conversion rate: 1 ETH = 100 CLT
         _mint(msg.sender, tokens);
@@ -86,12 +90,8 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
 
     // Sell tokens
     function sellToken(uint256 amount) external whenNotPaused {
-        require(amount > 0, "Amount must be greater than zero");
         require(balanceOf(msg.sender) >= amount, "Insufficient token balance to sell");
-        
         uint256 ethAmount = amount / 100; // Example conversion rate: 100 CLT = 1 ETH
-        require(address(this).balance >= ethAmount, "Insufficient ETH balance in the contract");
-        
         _burn(msg.sender, amount);
         payable(msg.sender).transfer(ethAmount);
     }

@@ -3,7 +3,7 @@ import { useSimulateContract, useWriteContract, useWaitForTransactionReceipt } f
 import { Address, parseEther } from 'viem'
 import { useState, useEffect } from 'react'
 import { print } from "@/utils/toast"
-import ico from '@/abi/ICO.json'
+import ico from '@/abi/ico.json'
 import { ICOContractAddress } from '@/utils/smartContractAddress'
 
 
@@ -62,8 +62,18 @@ export function BuyToken() {
                 <div className="p-4">
                     <h6 className="text-xl font-bold text-white-800">Buy Token</h6>
                     <div className="flex mt-4">
-                        <input onChange={(e) => handleQuantityInput(e)} type="number" className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Enter quantity" />
-                        <button onClick={handleBuyTransaction} className="ml-2 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Buy</button>
+                        <input
+                            type="number"
+                            className="text-black w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                            placeholder="Enter quantity"
+                            onChange={handleQuantityInput}
+                        />
+                        <button
+                            onClick={handleBuyTransaction}
+                            className="ml-2 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        >
+                            Buy
+                        </button>
                     </div>
                 </div>
             </div>

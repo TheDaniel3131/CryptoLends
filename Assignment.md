@@ -1,5 +1,7 @@
 # Project Setup Guidelines for All Users
 
+This is a User Guide for users who want to know how the program runs or functions, who are interested in code development particularly Blockchain Technology.
+
 To run CryptoLends project locally, feel free to follow the steps below to set up both the frontend and backend components of the project. You must have Visual Studio Code, Git or Hardhat installed beforehand. There are tons of resources available online that guide on how to install these tools.
 
 - VSCode: https://code.visualstudio.com/download

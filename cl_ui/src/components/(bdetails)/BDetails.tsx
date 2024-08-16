@@ -15,122 +15,122 @@ import { print } from "@/utils/toast";
 
 const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
   )
 }
 
 const PercentIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <line x1="19" x2="5" y1="5" y2="19" />
-          <circle cx="6.5" cy="6.5" r="2.5" />
-          <circle cx="17.5" cy="17.5" r="2.5" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line x1="19" x2="5" y1="5" y2="19" />
+      <circle cx="6.5" cy="6.5" r="2.5" />
+      <circle cx="17.5" cy="17.5" r="2.5" />
+    </svg>
   )
 }
 
 const ReceiptIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
-          <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
-          <path d="M12 17.5v-11" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z" />
+      <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
+      <path d="M12 17.5v-11" />
+    </svg>
   )
 }
 
 const WalletIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
-          <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+      <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+    </svg>
   )
 }
 
 const ClockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <circle cx="12" cy="12" r="10" />
-          <polyline points="12 6 12 12 16 14" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
   )
 }
 
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
-      <svg
-          {...props}
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-      >
-          <path d="m6 9 6 6 6-6" />
-      </svg>
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
   )
 }
 
@@ -155,46 +155,30 @@ function shortenAddress(address: string): string {
 }
 
 
-
 export function BDetails() {
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "loanAmount", order: "desc" });
-  const [filters, setFilters] = useState({
-    loanStatus: [],
-    loanDuration: [],
-  });
   const [loanDetails, setLoanDetails] = useState<LoanDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
-  const loanId = searchParams.get('id') as string | undefined;
-  console.log('Loan ID from URL:', loanId);
-  type LoanStatus = "Active" | "Pending" | "Completed";
+  const loanId = searchParams.get('id');
+  const router = useRouter();
 
   const { address } = useAccount();
-  const [borrowing_amount, setAmount] = useState<number>(0);
-  const [cryptocurrency, setContract] = useState('');
-  const [duration_return, setTerm] = useState<string>('1');
-  const [interest_rate, setRate] = useState<number>(0);
   const [message, setMessage] = useState('');
-  const [borrowLoading, setBorrowLoading] = useState(false);
-  const [borrowError, setBorrowError] = useState<string | null>(null);
-  const router = useRouter();
-  
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
-      address: ICOContractAddress as `0x${string}`,
-      abi: ico.abi,
-      functionName: 'borrowToken',
-      value: parseEther(borrowing_amount.toString()),
+    address: ICOContractAddress as `0x${string}`,
+    abi: ico.abi,
+    functionName: 'borrowToken',
+    args: [parseEther(loanDetails?.lending_amount.toString() || '0')],
   })
 
   const { data: hash, error: writeError, writeContract } = useWriteContract()
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
-      useWaitForTransactionReceipt({
-          hash,
-      })
+    useWaitForTransactionReceipt({
+      hash,
+    })
 
   useEffect(() => {
     async function fetchLoanDetails() {
@@ -221,98 +205,60 @@ export function BDetails() {
   }, [loanId]);
 
   useEffect(() => {
-    if (isConfirmed && hash) {
-        borrowingListInsert(address!, borrowing_amount, cryptocurrency, parseInt(duration_return), interest_rate)
-            .then((result) => {
-                setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
-                print("Borrowing transaction confirmed and recorded in the database.", "success");
-            })
-            .catch((error) => {
-                console.error("Error inserting lending entry:", error);
-                print("Failed to record borrowing entry in the database.", "error");
-            });
+    if (isConfirmed && hash && loanDetails) {
+      borrowingListInsert(
+        address!,
+        loanDetails.lending_amount,
+        loanDetails.cryptocurrency,
+        loanDetails.duration_return,
+        loanDetails.interest_rate
+      )
+        .then((result) => {
+          setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
+          print("Borrowing transaction confirmed and recorded in the database.", "success");
+        })
+        .catch((error) => {
+          console.error("Error inserting borrowing entry:", error);
+          print("Failed to record borrowing entry in the database.", "error");
+        });
     }
-}, [isConfirmed, hash, address, borrowing_amount, cryptocurrency, duration_return, interest_rate]);
-  
+  }, [isConfirmed, hash, address, loanDetails]);
 
   const handleBorrow = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Check if the wallet is connected
     if (!address) {
-        setBorrowError("Please connect your wallet first.");
-        return;
+      print("Please connect your wallet first.", "error");
+      return;
     }
 
-    // Check if the loan details are available
     if (!loanDetails) {
-        setBorrowError("No loan details available.");
-        return;
+      print("No loan details available.", "error");
+      return;
     }
 
-    // Handle simulated error
     if (simulateError) {
-        const errorMessage = simulateError.message || "Unknown error occurred during simulation.";
-        print("Error simulating transaction: " + errorMessage, "error");
-        return;
+      print("Error simulating transaction: " + simulateError.message, "error");
+      return;
     }
 
-    // Simulate data check
     if (!simulateData) {
-        print("Simulated data is unavailable. Please try again later.", "error");
-        return;
+      print("Simulated data is unavailable. Please try again later.", "error");
+      return;
     }
-
-    // Begin the borrowing process
-    setBorrowLoading(true);
-    setBorrowError(null);
 
     try {
-        // Trigger the contract interaction
-        const tx = await writeContract(simulateData.request);
-
-        // Wait for the transaction receipt
-        const receipt = await tx.wait();
-
-        if (receipt.status !== 1) {
-            throw new Error("Transaction failed.");
-        }
-        
-
-        // Insert borrowing details into Supabase
-        const insertSuccess = await borrowingListInsert(
-          address,                       // Wallet address
-          loanDetails.lending_amount,     // Loan amount
-          loanDetails.cryptocurrency,     // Cryptocurrency type
-          loanDetails.duration_return,    // Loan duration
-          loanDetails.interest_rate       // Interest rate
-      );
-      
-      if (insertSuccess) {
-          console.log('Record inserted successfully');
-      } else {
-          console.error('Error inserting record');
-      }
-      
-        // Navigate to another page or show success message
-        router.push('/success');
-        print("Borrowing transaction submitted. Waiting for confirmation...", "info");
+      const tx = await writeContract(simulateData.request);
+      print("Borrowing transaction submitted. Waiting for confirmation...", "info");
     } catch (error) {
-        print("Failed to submit borrowing transaction: " + (error as Error).message, "error");
-        setBorrowError(error.message);
-    } finally {
-        setBorrowLoading(false);
+      print("Failed to submit borrowing transaction: " + (error as Error).message, "error");
     }
-};
-
-
-  
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!loanDetails) return <div>No loan details found</div>;
 
-  console.log('Loan Details:', loanDetails); 
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -360,8 +306,8 @@ export function BDetails() {
                 </div>
               </div>
               <div className="flex justify-center mt-8">
-                  <Button onClick={handleBorrow} disabled={borrowLoading || isConfirming}>
-                    {isConfirming ? 'Confirming...' : 'Borrow'}
+                <Button onClick={handleBorrow} disabled={!address || isConfirming}>
+                  {isConfirming ? 'Confirming...' : 'Borrow'}
                 </Button>
               </div>
             </div>

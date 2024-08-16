@@ -342,7 +342,7 @@ Overall, the `BDetails.tsx` component is a comprehensive solution for managing l
 
 ![](https://cdn.discordapp.com/attachments/1245673510710542399/1273984994372620328/2024-08-16-18-35-39-image.png?ex=66c09a7c&is=66bf48fc&hm=bc9e86ac4925e17da41842df7b6574c64c0319713f0f0b25765a3338736a141e&=)
 
-The`AboutUsPage` component presents a well-structured and engaging overview of the CryptoLends platform. It effectively introduces the platform's mission, highlights its core features, and provides an overview of the team behind it.
+The `AboutUsPage` component presents a well-structured and engaging overview of the CryptoLends platform. It effectively introduces the platform's mission, highlights its core features, and provides an overview of the team behind it.
 
 In terms of icons, the page uses a set of distinct and relevant icons to illustrate key features such as low interest rates, fast approvals, and secure transactions. However, it’s important to ensure that the icons used, such as `CurrencyIcon` and `CoinsIcon`, are chosen based on their specific context and intended meaning to avoid any confusion.
 

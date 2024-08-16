@@ -1,16 +1,21 @@
 "use client";
 
-import { ethers } from 'ethers';
-import { useSearchParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from 'wagmi';
+import { parseEther, formatEther } from 'viem';
 import { Button } from "@/components/ui/button";
-import { supabase } from '@/lib/supabaseClient'; // Ensure this import is correct
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
-import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+  Collapsible,
+  CollapsibleTrigger,
+  CollapsibleContent,
+} from "@/components/ui/collapsible";
+import { supabase } from '@/lib/supabaseClient';
 import { ICOContractAddress } from '@/utils/smartContractAddress';
-import ico from '@/abi/ICO.json';
-import { parseEther } from 'viem';
-import { borrowingListInsert } from '../../supabase/query/borrowingListInsert';
+import ico from '@/abi/ico.json';
+import { transactionProcess } from '../../supabase/query/transactionProcess';
 import { print } from "@/utils/toast";
 
 const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
@@ -30,8 +35,8 @@ const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
       <path d="M7 11V7a5 5 0 0 1 10 0v4" />
     </svg>
-  )
-}
+  );
+};
 
 const PercentIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -51,8 +56,8 @@ const PercentIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       <circle cx="6.5" cy="6.5" r="2.5" />
       <circle cx="17.5" cy="17.5" r="2.5" />
     </svg>
-  )
-}
+  );
+};
 
 const ReceiptIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -72,8 +77,8 @@ const ReceiptIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8" />
       <path d="M12 17.5v-11" />
     </svg>
-  )
-}
+  );
+};
 
 const WalletIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -92,8 +97,8 @@ const WalletIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
       <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
     </svg>
-  )
-}
+  );
+};
 
 const ClockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -112,8 +117,8 @@ const ClockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       <circle cx="12" cy="12" r="10" />
       <polyline points="12 6 12 12 16 14" />
     </svg>
-  )
-}
+  );
+};
 
 const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
@@ -131,9 +136,8 @@ const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
     >
       <path d="m6 9 6 6 6-6" />
     </svg>
-  )
-}
-
+  );
+};
 
 interface LoanDetails {
   cryptocurrency: string;
@@ -146,14 +150,12 @@ interface LoanDetails {
   address: string;
 }
 
-// Function to shorten wallet address
 function shortenAddress(address: string): string {
   if (address.length <= 10) {
     return address;
   }
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
-
 
 export function BDetails() {
   const [loanDetails, setLoanDetails] = useState<LoanDetails | null>(null);
@@ -165,20 +167,23 @@ export function BDetails() {
 
   const { address } = useAccount();
   const [message, setMessage] = useState('');
+  const [contractBalance, setContractBalance] = useState<bigint>(BigInt(0));
+
+  const publicClient = usePublicClient();
 
   const { data: simulateData, error: simulateError } = useSimulateContract({
     address: ICOContractAddress as `0x${string}`,
     abi: ico.abi,
     functionName: 'borrowToken',
     args: [parseEther(loanDetails?.lending_amount.toString() || '0')],
-  })
+  });
 
-  const { data: hash, error: writeError, writeContract } = useWriteContract()
+  const { data: hash, error: writeError, writeContract } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
       hash,
-    })
+    });
 
   useEffect(() => {
     async function fetchLoanDetails() {
@@ -205,176 +210,124 @@ export function BDetails() {
   }, [loanId]);
 
   useEffect(() => {
+    async function fetchContractBalance() {
+      if (ICOContractAddress) {
+        try {
+          const balance = await publicClient?.getBalance({ address: ICOContractAddress as `0x${string}` });
+          if (balance) {
+            setContractBalance(balance);
+          }
+        } catch (error) {
+          console.error("Error fetching contract balance:", error);
+        }
+      }
+    }
+
+    fetchContractBalance();
+  }, [publicClient]);
+
+  useEffect(() => {
     if (isConfirmed && hash && loanDetails) {
-      borrowingListInsert(
+      transactionProcess(
         address!,
+        loanDetails.address,
         loanDetails.lending_amount,
         loanDetails.cryptocurrency,
         loanDetails.duration_return,
         loanDetails.interest_rate
       )
         .then((result) => {
-          setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
+          setMessage(result ? 'Your transaction has been successfully recorded!' : 'Failed to record your transaction.');
           print("Borrowing transaction confirmed and recorded in the database.", "success");
         })
         .catch((error) => {
-          console.error("Error inserting borrowing entry:", error);
-          print("Failed to record borrowing entry in the database.", "error");
+          console.error("Error processing transaction:", error);
+          print("Failed to process the transaction.", "error");
         });
     }
   }, [isConfirmed, hash, address, loanDetails]);
 
-  const handleBorrow = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!address) {
-      print("Please connect your wallet first.", "error");
-      return;
-    }
-
-    if (!loanDetails) {
-      print("No loan details available.", "error");
-      return;
-    }
-
-    if (simulateError) {
-      print("Error simulating transaction: " + simulateError.message, "error");
-      return;
-    }
-
+  const handleConfirmBorrow = async () => {
     if (!simulateData) {
-      print("Simulated data is unavailable. Please try again later.", "error");
+      console.error('Simulation data is not available. Cannot proceed with borrow.');
       return;
     }
 
     try {
-      const tx = await writeContract(simulateData.request);
-      print("Borrowing transaction submitted. Waiting for confirmation...", "info");
+      await writeContract();
+      console.log('Borrowing transaction initiated.');
     } catch (error) {
-      print("Failed to submit borrowing transaction: " + (error as Error).message, "error");
+      console.error('Error initiating borrowing transaction:', error);
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
-  if (!loanDetails) return <div>No loan details found</div>;
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!loanDetails) {
+    return <div>Loan details not found.</div>;
+  }
 
   return (
-    <div className="flex flex-col min-h-[100dvh]">
-      <main className="flex-1">
-        <section className="bg-background py-12 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
-            <div className="flex items-center justify-between">
-              <h1 className="text-3xl font-bold">Loan Details</h1>
-            </div>
-            <div className="bg-background rounded-lg shadow-lg p-8 mx-auto max-w-2xl">
-              <div className="grid gap-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Lender Wallet Address</h2>
-                    <p>{shortenAddress(loanDetails.address)}</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Loan Amount</h2>
-                    <p>{loanDetails.lending_amount} {loanDetails.cryptocurrency}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Loan Duration</h2>
-                    <p>{loanDetails.duration_return} Month</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Cryptocurrency Type</h2>
-                    <p>Ethereum (ETH)</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <h2 className="text-lg font-bold">Interest Rate</h2>
-                    <p>{loanDetails.interest_rate}%</p>
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-bold">Status</h2>
-                    <span
-                      className={`badge ${loanDetails.status === "Completed" ? "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-red-500" : loanDetails.status === "Active" ? "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-green-500" : "ml-2 px-2 py-1 rounded-full text-xs text-primary-foreground bg-gray-500"}`}
-                    >
-                      {loanDetails.status}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-center mt-8">
-                <Button onClick={handleBorrow} disabled={!address || isConfirming}>
-                  {isConfirming ? 'Confirming...' : 'Borrow'}
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-        <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-          <div className="max-w-3xl space-y-6 text-center">
-            <h2 className="text-3xl font-bold">How it Works</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <WalletIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Connect Wallet</h3>
-                <p className="text-muted-foreground">
-                  Connect your crypto wallet to our platform to start borrowing.
-                </p>
-              </div>
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <PercentIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Choose Loan Terms</h3>
-                <p className="text-muted-foreground">
-                  Select the asset, amount, and term that best suits your needs.
-                </p>
-              </div>
-              <div className="bg-background p-6 rounded-xl shadow-sm">
-                <ReceiptIcon className="h-8 w-8 mb-4 text-secondary" />
-                <h3 className="text-xl font-bold mb-2">Access Crypto Liquidity</h3>
-                <p className="text-muted-foreground">
-                  Receive the crypto you need to fund your projects or personal expenses.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Loan Details</h1>
 
-        {/* Frequently Asked Questions Section */}
-        <section className="bg-background py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-          <div className="max-w-3xl space-y-6 text-center">
-            <h2 className="text-3xl font-bold">Frequently Asked Questions</h2>
-            <div className="grid gap-4">
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">What is the minimum amount I can borrow?</h3>
-                  <ChevronDownIcon className="h-5 w-5" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="bg-background p-4 rounded-xl">
-                  <p className="text-muted-foreground">
-                    The minimum amount you can borrow is $100.
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
-              <Collapsible>
-                <CollapsibleTrigger className="flex items-center justify-between w-full bg-muted p-4 rounded-xl">
-                  <h3 className="text-lg font-bold">How long does it take to get approved?</h3>
-                  <ChevronDownIcon className="h-5 w-5" />
-                </CollapsibleTrigger>
-                <CollapsibleContent className="bg-background p-4 rounded-xl">
-                  <p className="text-muted-foreground">
-                    Loan approval usually takes between 24 to 48 hours.
-                  </p>
-                </CollapsibleContent>
-              </Collapsible>
+      <div className="grid gap-4">
+        <div>
+          <Label>Lender</Label>
+          <Input value={shortenAddress(loanDetails.address)} readOnly />
+        </div>
+
+        <div>
+          <Label>Amount</Label>
+          <Input value={`${loanDetails.lending_amount} ${loanDetails.cryptocurrency}`} readOnly />
+        </div>
+
+        <div>
+          <Label>Duration (Months)</Label>
+          <Input value={loanDetails.duration_return} readOnly />
+        </div>
+
+        <div>
+          <Label>Interest Rate (%)</Label>
+          <Input value={loanDetails.interest_rate} readOnly />
+        </div>
+
+        <div>
+          <Label>Contract Balance</Label>
+          <Input value={formatEther(contractBalance)} readOnly />
+        </div>
+
+        <Button onClick={handleConfirmBorrow} disabled={isConfirming}>
+          {isConfirming ? 'Confirming...' : 'Confirm Borrow'}
+        </Button>
+
+        {message && <div className="mt-4">{message}</div>}
+
+        <Collapsible>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" className="w-full justify-between">
+              <span>Show More Details</span>
+              <ChevronDownIcon className="ml-2 h-4 w-4" />
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent>
+            <div className="mt-4">
+              <Label>Status</Label>
+              <Input value={loanDetails.status} readOnly />
             </div>
-          </div>
-        </section>
-      </main>
+            <div className="mt-4">
+              <Label>Term</Label>
+              <Input value={loanDetails.term} readOnly />
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+      </div>
     </div>
   );
 }
-
-export default BDetails;

@@ -40,8 +40,8 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
         _unpause();
     }
 
-    // borrow Token
-    function borrowToken(uint _amount, uint _interest, uint _duration) external {
+    // Borrow tokens
+    function borrowToken(uint _amount, uint _interest, uint _duration) external whenNotPaused {
         require(balanceOf(msg.sender) >= _amount, "Insufficient token balance for borrowing");
         loans[nextLoanId] = Loan({
             id: nextLoanId,
@@ -56,13 +56,15 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
     }
 
     // Fund a loan
-    // function fundLoan(uint _loanId) external payable whenNotPaused {
-    //     Loan storage loan = loans[_loanId];
-    //     require(msg.value == loan.amount, "Incorrect loan amount");
-    //     require(loan.lender == address(0), "Loan already funded");
-    //     loan.lender = payable(msg.sender);
-    //     loan.borrower.transfer(msg.value);
-    // }
+    function fundLoan(uint _loanId) external payable whenNotPaused {
+        Loan storage loan = loans[_loanId];
+        require(msg.value == loan.amount, "Incorrect loan amount");
+        require(loan.lender == address(0), "Loan already funded");
+        require(!loan.repaid, "Loan already repaid");
+        
+        loan.lender = payable(msg.sender);
+        loan.borrower.transfer(msg.value);
+    }
 
     // Repay a loan
     function repayLoan(uint _loanId) external payable whenNotPaused {
@@ -70,6 +72,7 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
         require(msg.sender == loan.borrower, "Only borrower can repay");
         require(!loan.repaid, "Loan already repaid");
         require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
+        
         loan.lender.transfer(msg.value);
         loan.repaid = true;
     }
@@ -83,8 +86,12 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
 
     // Sell tokens
     function sellToken(uint256 amount) external whenNotPaused {
+        require(amount > 0, "Amount must be greater than zero");
         require(balanceOf(msg.sender) >= amount, "Insufficient token balance to sell");
+        
         uint256 ethAmount = amount / 100; // Example conversion rate: 100 CLT = 1 ETH
+        require(address(this).balance >= ethAmount, "Insufficient ETH balance in the contract");
+        
         _burn(msg.sender, amount);
         payable(msg.sender).transfer(ethAmount);
     }

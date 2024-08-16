@@ -10,7 +10,7 @@ import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactio
 import { ICOContractAddress } from '@/utils/smartContractAddress';
 import ico from '@/abi/ICO.json';
 import { parseEther } from 'viem';
-import { borrowingListInsert } from '../../supabase/query/borrowingListInsert';
+import { transactionProcess } from '../../supabase/query/transactionProcess';
 import { print } from "@/utils/toast";
 
 
@@ -172,6 +172,7 @@ export function BDetails() {
     abi: ico.abi,
     functionName: 'borrowToken',
     args: [parseEther(loanDetails?.lending_amount.toString() || '0')],
+    account: address
   })
 
   const { data: hash, error: writeError, writeContract } = useWriteContract()
@@ -207,12 +208,13 @@ export function BDetails() {
 
   useEffect(() => {
     if (isConfirmed && hash && loanDetails) {
-      borrowingListInsert(
-        address!,
-        loanDetails.lending_amount,
-        loanDetails.cryptocurrency,
-        loanDetails.duration_return,
-        loanDetails.interest_rate
+      transactionProcess(
+        loanDetails.address, // lender
+        address!, // borrower
+        loanDetails.lending_amount, // amount
+        loanDetails.cryptocurrency, // currency
+        loanDetails.duration_return, // durationMonth
+        loanDetails.interest_rate // rate
       )
         .then((result) => {
           setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
@@ -224,6 +226,7 @@ export function BDetails() {
         });
     }
   }, [isConfirmed, hash, address, loanDetails]);
+  
 
   const handleBorrow = async (event: React.FormEvent) => {
     event.preventDefault();

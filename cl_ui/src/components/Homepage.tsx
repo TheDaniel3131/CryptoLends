@@ -150,7 +150,7 @@ export function showDisclaimer() {
       </p>
       <Button
         onClick={() => toast.dismiss()}
-        className="mt-5 ml-2 bg-yellow-400 text-black"
+        className="mt-5 ml-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold"
       >
         I Understand
       </Button>

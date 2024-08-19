@@ -4,7 +4,7 @@ import { JSX, SVGProps, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BuyToken } from './(buytoken)/BuyToken'; // Update path as needed
-import { SellToken } from './(selltoken)/SellToken'; // Update path as needed
+//import { SellToken } from './(selltoken)/SellToken'; // Update path as needed
 
 export function Homepage() {
   useEffect(() => {
@@ -124,14 +124,15 @@ export function Homepage() {
         <section className="py-16 px-6 md:px-12 bg-muted">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Buy & Sell CryptoLends Tokens</h2>
+              <h2 className="text-3xl font-bold">Buy CryptoLends Tokens</h2>
               <p className="text-muted-foreground">
                 Manage your CryptoLends tokens easily. Buy tokens to participate in lending and selling tokens to get liquidity.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <BuyToken />
-              <SellToken />
+            <div className="flex justify-center">
+              <div className="bg-background p-6 rounded-xl shadow-sm w-full max-w-md">
+                <BuyToken />
+              </div>
             </div>
           </div>
         </section>
@@ -149,7 +150,7 @@ export function showDisclaimer() {
       </p>
       <Button
         onClick={() => toast.dismiss()}
-        className="mt-5 ml-2 bg-yellow-400 text-black"
+        className="mt-5 ml-2 bg-yellow-400 hover:bg-yellow-300 text-black font-bold"
       >
         I Understand
       </Button>

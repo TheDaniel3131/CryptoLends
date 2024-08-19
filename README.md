@@ -33,3 +33,5 @@ npm run compile is same as npx hardhat compile
 #### Misc (Not for Public View):
 
 Discussion Threads: [Google Docs Link](https://docs.google.com/document/d/1ktRCx8tw9-VSfIOH4tqIF9Btzvad_O_SZXijZx36rd8/edit?usp=sharing)
+
+.7z CryptoLends Project: https://www.mediafire.com/file/0gsgtfscymbtn7t/cryptolends.7z/file

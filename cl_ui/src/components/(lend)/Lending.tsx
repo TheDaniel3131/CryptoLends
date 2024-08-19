@@ -240,7 +240,7 @@ export default function LendingPage() {
         <div className="flex flex-col min-h-[100dvh]">
             <main className="flex-1">
                 <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-                    <div className="max-w-3xl space-y-6 text-center">
+                    <div className="max-w-7xl space-y-6 text-center">
                         <h1 className="text-4xl font-bold">Lend Your Crypto</h1>
                         <p className="text-muted-foreground">
                             Earn passive income by lending your crypto assets to borrowers on our platform.

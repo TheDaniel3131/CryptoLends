@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from 'react-toastify';
 import { Button } from "@/components/ui/button";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -21,6 +22,34 @@ interface Repayment {
   status: string;
 }
 
+
+interface SortButtonProps {
+  label: string;
+  sortKey: keyof Repayment;
+  currentSort: { key: keyof Repayment; order: "asc" | "desc" };
+  onSort: (key: keyof Repayment) => void;
+}
+
+const SortButton: React.FC<SortButtonProps> = ({ label, sortKey, currentSort, onSort }) => {
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => onSort(sortKey)}
+      className="h-8 px-2 lg:px-3"
+    >
+      {label}
+      {currentSort.key === sortKey ? (
+        currentSort.order === "asc" ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        )
+      ) : (
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      )}
+    </Button>
+  );
+};
 
 const CONTRACT_ADDRESS = '0x90F79bf6EB2c4f870365E785982E1f101E93b906';
 const CONTRACT_ABI = [
@@ -100,12 +129,35 @@ export default function Repayment() {
           repayment.status.toLowerCase().includes(searchValue)
         );
       })
-      .sort((a, b) => sort.order === "asc" ? (a[sort.key] > b[sort.key] ? 1 : -1) : (a[sort.key] < b[sort.key] ? 1 : -1));
+      .sort((a, b) => {
+        const aValue = a[sort.key];
+        const bValue = b[sort.key];
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sort.order === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sort.order === "asc" ? aValue - bValue : bValue - aValue;
+        }
+
+        // Fallback for other types
+        if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
+        if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
+        return 0;
+      });
   }, [search, sort, repayments]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value);
-  const handleSort = (key: keyof Repayment) => setSort({ key, order: sort.key === key && sort.order === "asc" ? "desc" : "asc" });
 
+  const handleSort = (key: keyof Repayment) => {
+    setSort((prevSort) => ({
+      key,
+      order: prevSort.key === key && prevSort.order === "asc" ? "desc" : "asc",
+    }));
+  };
   const [transactionPending, setTransactionPending] = useState(false);
 
   const handleRepay = async (id: number, amount: number) => {
@@ -177,13 +229,24 @@ export default function Repayment() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className='text-center' onClick={() => handleSort("id")}>ID</TableHead>
-                  <TableHead className='text-center' onClick={() => handleSort("address_borrower")}>Borrower Address</TableHead>
-                  <TableHead className='text-center' onClick={() => handleSort("token_amount")}>Amount</TableHead>
-                  <TableHead className='text-center' onClick={() => handleSort("lending_or_borrowing_start_date")}>Repayment Start Date</TableHead>
-                  <TableHead className='text-center' onClick={() => handleSort("lending_or_borrowing_end_date")}>Repayment End Date</TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="ID" sortKey="id" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Borrower Address" sortKey="address_borrower" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Amount" sortKey="token_amount" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Repayment Start Date" sortKey="lending_or_borrowing_start_date" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Repayment End Date" sortKey="lending_or_borrowing_end_date" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
                   <TableHead className='text-center' onClick={() => handleSort("status")}>Status</TableHead>
-                  <TableHead className='text-center'>Action</TableHead>
+                  <TableHead className='text-center'>|</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -202,13 +265,13 @@ export default function Repayment() {
                       <TableCell className='text-center'>{repayment.lending_or_borrowing_start_date}</TableCell>
                       <TableCell className='text-center'>{repayment.lending_or_borrowing_end_date}</TableCell>
                       <TableCell className='text-center'><Badge>{repayment.status}</Badge></TableCell>
+                      <TableCell className='text-center text-slate-500'>|</TableCell>
                       <TableCell className='text-center'>
                         <Button
                           onClick={() => handleRepay(repayment.id, repayment.token_amount)}
                         >
                           Repay
                         </Button>
-
                       </TableCell>
                     </TableRow>
                   ))

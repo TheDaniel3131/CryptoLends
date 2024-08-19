@@ -11,8 +11,17 @@ import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
+// Function to shorten wallet address
+function shortenAddress(address: string): string {
+    if (address.length <= 10) {
+        return address;
+    }
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
+
 export default function Component(): JSX.Element {
-    const { address } = useAccount();
+    const { address = '' } = useAccount();
     const [transactions, setTransactions] = useState([]);
     const [debtAmount, setDebtAmount] = useState(0);
     const [lendAmount, setLendAmount] = useState(0);
@@ -56,8 +65,8 @@ export default function Component(): JSX.Element {
             <main className="flex-1">
                 <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
                     <div className="max-w-3xl space-y-6 text-center">
-                        <h1 className="text-4xl font-bold">Your Borrowing Dashboard</h1>
-                        <p className="text-muted-foreground">Track your borrowing history, current debt, and profile details.</p>
+                        <h1 className="text-4xl font-bold">My Borrowing Dashboard</h1>
+                        <p className="text-muted-foreground">Track your own borrowing history, current debt, and profile details.</p>
                         <div className="bg-background p-6 rounded-xl shadow-sm grid gap-4">
                             <div className="grid md:grid-cols-2 gap-4">
                                 <Card>
@@ -83,16 +92,16 @@ export default function Component(): JSX.Element {
                             </div>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Your Profile</CardTitle>
+                                    <CardTitle className="text-center mb-2">My Profile</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="wallet">Wallet Address</Label>
-                                        <Input id="wallet" type="text" value={address || 'N/A'} disabled />
+                                        <Label htmlFor="wallet" className="text-center">Wallet Address:</Label>
+                                        <Input id="wallet" type="text" value={shortenAddress(address) || 'N/A'} disabled className="text-center" />
                                     </div>
                                     <div className="grid gap-2">
-                                        <Label htmlFor="collateral">Collateral</Label>
-                                        <Input id="collateral" type="text" value={lendAmount + ' CLT'|| '0 CLT'} disabled />
+                                        <Label htmlFor="collateral" className="text-center">Collateral:</Label>
+                                        <Input id="collateral" type="text" value={lendAmount + ' CLT' || '0 CLT'} disabled className="text-center" />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -106,13 +115,13 @@ export default function Component(): JSX.Element {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead className = 'text-center'>Asset</TableHead>
-                                        <TableHead className = 'text-center'>Amount</TableHead>
-                                        <TableHead className = 'text-center'>Term</TableHead>
-                                        <TableHead className = 'text-center'>Interest Rate</TableHead>
-                                        <TableHead className = 'text-center'>Status</TableHead>
-                                        <TableHead className = 'text-center'>Start Date</TableHead>
-                                        <TableHead className = 'text-center'>End Date</TableHead>
+                                        <TableHead className='text-center'>Asset</TableHead>
+                                        <TableHead className='text-center'>Amount</TableHead>
+                                        <TableHead className='text-center'>Term</TableHead>
+                                        <TableHead className='text-center'>Interest Rate</TableHead>
+                                        <TableHead className='text-center'>Status</TableHead>
+                                        <TableHead className='text-center'>Start Date</TableHead>
+                                        <TableHead className='text-center'>End Date</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -125,8 +134,8 @@ export default function Component(): JSX.Element {
                                             <TableCell>
                                                 <Badge className={transaction.status === 'Active' ? 'bg-blue-500 text-white'
                                                     : transaction.status === 'Complete' ? 'bg-green-500 text-white'
-                                                    : transaction.status === 'Pending' ? 'bg-yellow-500 text-white'
-                                                    :''}>
+                                                        : transaction.status === 'Pending' ? 'bg-yellow-500 text-white'
+                                                            : ''}>
                                                     {transaction.status}
                                                 </Badge>
                                             </TableCell>

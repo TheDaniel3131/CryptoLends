@@ -211,14 +211,13 @@ const CashOutPage: React.FC = () => {
                         <div className="bg-muted p-6 rounded-xl shadow-sm">
                             <Table>
                                 <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Asset</TableHead>
-                                        <TableHead>Amount</TableHead>
-                                        <TableHead>Term</TableHead>
-                                        <TableHead>Interest Rate</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Date</TableHead>
-                                        <TableHead>Action</TableHead>
+                                    <TableRow className="font-semibold">
+                                        <TableHead className='text-center'>Asset</TableHead>
+                                        <TableHead className='text-center'>Amount</TableHead>
+                                        <TableHead className='text-center'>Term</TableHead>
+                                        <TableHead className='text-center'>Interest Rate</TableHead>
+                                        <TableHead className='text-center'>Status</TableHead>
+                                        <TableHead className='text-center'>Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -229,11 +228,10 @@ const CashOutPage: React.FC = () => {
                                             <TableCell>{loan.term}</TableCell>
                                             <TableCell>{loan.interest_rate}</TableCell>
                                             <TableCell>
-                                                <Badge variant={loan.status === "Repaid" ? "secondary" : loan.status === "Active" ? "default" : "outline"}>
+                                                <Badge className={loan.status === "Repaid" ? "secondary" : loan.status === "Active" ? "default" : loan.status === "Pending" ? "outline" : "outline"}>
                                                     {loan.status}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell>{loan.date}</TableCell>
                                             <TableCell>
                                                 <Button
                                                     variant="outline"

@@ -8,6 +8,7 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from 'react-toastify';
+import { Button } from "@/components/ui/button";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -131,9 +132,9 @@ export default function Repayment() {
         toast.success('Repayment successful');
 
         const { error } = await supabase
-        .from('transaction_record')
-        .update({ status: 'Repaid' })
-        .eq('id', id);
+          .from('transaction_record')
+          .update({ status: 'Repaid' })
+          .eq('id', id);
 
         if (error) {
           console.error('Error updating status:', error.message);
@@ -160,8 +161,8 @@ export default function Repayment() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="bg-background py-12 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
+        <section className="bg-background py-12 px-8 md:px-12">
+          <div className="max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Repay Dashboard</h1>
               <div className="flex items-center gap-4">
@@ -169,20 +170,20 @@ export default function Repayment() {
                   placeholder="Search repayments..."
                   value={search}
                   onChange={handleSearch}
-                  className="max-w-xs"
+                  className="max-w-6xl"
                 />
               </div>
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead onClick={() => handleSort("id")}>ID</TableHead>
-                  <TableHead onClick={() => handleSort("address_borrower")}>Borrower Address</TableHead>
-                  <TableHead onClick={() => handleSort("token_amount")}>Amount</TableHead>
-                  <TableHead onClick={() => handleSort("lending_or_borrowing_start_date")}>Repayment Start Date</TableHead>
-                  <TableHead onClick={() => handleSort("lending_or_borrowing_end_date")}>Repayment End Date</TableHead>
-                  <TableHead onClick={() => handleSort("status")}>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("id")}>ID</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("address_borrower")}>Borrower Address</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("token_amount")}>Amount</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("lending_or_borrowing_start_date")}>Repayment Start Date</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("lending_or_borrowing_end_date")}>Repayment End Date</TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("status")}>Status</TableHead>
+                  <TableHead className='text-center'>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -195,20 +196,19 @@ export default function Repayment() {
                 ) : filteredRepayments.length > 0 ? (
                   filteredRepayments.map((repayment) => (
                     <TableRow key={repayment.id}>
-                      <TableCell>{repayment.id}</TableCell>
-                      <TableCell>{repayment.address_borrower}</TableCell>
-                      <TableCell>{repayment.token_amount}</TableCell>
-                      <TableCell>{repayment.lending_or_borrowing_start_date}</TableCell>
-                      <TableCell>{repayment.lending_or_borrowing_end_date}</TableCell>
-                      <TableCell><Badge>{repayment.status}</Badge></TableCell>
-                      <TableCell>
-                        <Badge>
-                          <button
-                            onClick={() => handleRepay(repayment.id, repayment.token_amount)}
-                          >
-                            Repay
-                          </button>
-                        </Badge>
+                      <TableCell className='text-center'>{repayment.id}</TableCell>
+                      <TableCell className='text-center'>{repayment.address_borrower}</TableCell>
+                      <TableCell className='text-center'>{repayment.token_amount}</TableCell>
+                      <TableCell className='text-center'>{repayment.lending_or_borrowing_start_date}</TableCell>
+                      <TableCell className='text-center'>{repayment.lending_or_borrowing_end_date}</TableCell>
+                      <TableCell className='text-center'><Badge>{repayment.status}</Badge></TableCell>
+                      <TableCell className='text-center'>
+                        <Button
+                          onClick={() => handleRepay(repayment.id, repayment.token_amount)}
+                        >
+                          Repay
+                        </Button>
+
                       </TableCell>
                     </TableRow>
                   ))

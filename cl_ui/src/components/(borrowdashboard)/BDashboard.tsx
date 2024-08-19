@@ -18,6 +18,11 @@ import { parseEther } from 'viem';
 import { print } from "@/utils/toast";
 import { transactionProcess } from '../../supabase/query/transactionProcess';
 import { useAccount, useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import crypto from 'crypto';
+
+function hashAddress(address: string): string {
+  return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
 
 
 interface Loan {
@@ -33,7 +38,7 @@ interface Loan {
 }
 
 export default function Component() {
-
+  const [addressesHashed, setAddressesHashed] = useState(false);
   const { address: currentUserAddress } = useAccount();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
@@ -156,6 +161,50 @@ export default function Component() {
     }));
   };
 
+  useEffect(() => {
+    async function hashAllWalletAddresses() {
+      if (addressesHashed) return; // Skip if already hashed
+
+      // Fetch all wallet addresses
+      const { data, error } = await supabase
+        .from('lending_list')
+        .select('id, address');
+
+      if (error) {
+        console.error('Error fetching wallet addresses:', error);
+        return;
+      }
+
+      // Hash each address that is not already hashed
+      for (const record of data) {
+        // Check if the address is already hashed
+        if (isAddressHashed(record.address)) continue;
+
+        const hashedAddress = hashAddress(record.address);
+
+        const { error: updateError } = await supabase
+          .from('lending_list')
+          .update({ address: hashedAddress })
+          .eq('id', record.id);
+
+        if (updateError) {
+          console.error(`Error updating record ID ${record.id}:`, updateError);
+        } else {
+          console.log(`Successfully hashed address for record ID ${record.id}`);
+        }
+      }
+
+      setAddressesHashed(true); // Set the state to indicate addresses are hashed
+    }
+
+    function isAddressHashed(address: string): boolean {
+      // Example check: if the address length is not 42 (standard Ethereum address length), assume it's hashed
+      return address.length !== 42;
+    }
+
+    hashAllWalletAddresses();
+  }, [addressesHashed]);
+
   const handleRecordTransaction = async (loanId: string) => {
     try {
       // Fetch the details of the loan
@@ -172,6 +221,8 @@ export default function Component() {
       // Prepare the data to insert
       const { address: lenderAddress, lending_amount, duration_return, interest_rate, cryptocurrency } = loanDetails;
 
+      const hashedBorrowerAddress = hashAddress(currentUserAddress!);
+
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(startDate.getMonth() + duration_return);
@@ -181,7 +232,7 @@ export default function Component() {
         .from('transaction_record')
         .insert({
           address_lender: lenderAddress,
-          address_borrower: currentUserAddress!, // Ensure address is defined
+          address_borrower: hashedBorrowerAddress, // Ensure address is hashed
           token_amount: lending_amount,
           lending_or_borrowing_start_date: startDate.toISOString(),
           lending_or_borrowing_end_date: endDate.toISOString(),
@@ -194,7 +245,7 @@ export default function Component() {
       if (insertError) {
         throw insertError;
       }
-
+      
       alert('Transaction recorded successfully!');
     } catch (error) {
       console.error('Error recording transaction:', error);

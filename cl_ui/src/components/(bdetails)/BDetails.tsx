@@ -178,6 +178,7 @@ export function BDetails() {
   const { data: hash, error: writeError, writeContract } = useWriteContract()
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
+  
     useWaitForTransactionReceipt({
       hash,
     })

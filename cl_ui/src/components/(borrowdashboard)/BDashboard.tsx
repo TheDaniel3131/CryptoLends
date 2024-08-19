@@ -33,12 +33,12 @@ interface Loan {
 }
 
 export default function Component() {
-  
+
   const { address: currentUserAddress } = useAccount();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
   type LoanStatus = "Active" | "Pending" | "Completed";
-  type LoanDuration = "6 months" | "9 months" | "12 months" | "18 months" | "24 months";
+  type LoanDuration = "1 month" | "3 months" | "6 months" | "9 months" | "12 months" | "18 months" | "24 months";
 
   type Loan = {
     [key: string]: any;
@@ -98,8 +98,21 @@ export default function Component() {
         if (filters.loanStatus.length > 0 && !filters.loanStatus.includes(loan.status as LoanStatus)) {
           return false;
         }
+
+        if (filters.loanDuration.length > 0) {
+          const loanDurationMonths = loan.duration_return;
+          const matchesDuration = filters.loanDuration.some(duration => {
+            const [amount, unit] = duration.split(' ');
+            const filterMonths = unit === 'month' ? parseInt(amount) : parseInt(amount) * 12;
+            return loanDurationMonths === filterMonths;
+          });
+          if (!matchesDuration) {
+            return false;
+          }
+        }
         return true;
       })
+
       .sort((a, b) => {
         if (!a || !b) return 0;
 
@@ -151,7 +164,7 @@ export default function Component() {
         .select('*')
         .eq('id', loanId)
         .single();
-      
+
       if (fetchError) {
         throw fetchError;
       }
@@ -162,8 +175,8 @@ export default function Component() {
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(startDate.getMonth() + duration_return);
-  
-      
+
+
       const { error: insertError } = await supabase
         .from('transaction_record')
         .insert({
@@ -181,6 +194,11 @@ export default function Component() {
       if (insertError) {
         throw insertError;
       }
+      if (!currentUserAddress) {
+        print("Please connect your wallet first.", "error");
+        return;
+      }
+  
 
       alert('Transaction recorded successfully!');
     } catch (error) {
@@ -188,7 +206,7 @@ export default function Component() {
       alert('Failed to record transaction.');
     }
   };
-  
+
 
 
   return (
@@ -291,6 +309,18 @@ export default function Component() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[200px]">
                     <DropdownMenuCheckboxItem
+                      checked={filters.loanDuration.includes("1 month")}
+                      onCheckedChange={() => handleFilter("loanDuration", "1 month")}
+                    >
+                      1 month
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
+                      checked={filters.loanDuration.includes("3 months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "3 months")}
+                    >
+                      3 months
+                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuCheckboxItem
                       checked={filters.loanDuration.includes("6 months")}
                       onCheckedChange={() => handleFilter("loanDuration", "6 months")}
                     >
@@ -343,12 +373,12 @@ export default function Component() {
                         <TableCell>
                           <Badge>{loan.status}</Badge>
                         </TableCell>
-                        <TableCell>{loan.lending_amount}</TableCell>  
-                        <TableCell>{loan.duration_return} Month</TableCell>
+                        <TableCell>{loan.lending_amount}</TableCell>
+                        <TableCell>{loan.duration_return} {loan.duration_return === 1 ? "Month" : "Months"}</TableCell>
                         <TableCell>{loan.interest_rate}%</TableCell>
                         <TableCell>{loan.cryptocurrency}</TableCell>
                         <TableCell>
-                            {/* <Link href={`/bdetails?id=${loan.id}`}>
+                          {/* <Link href={`/bdetails?id=${loan.id}`}>
                             <Button>Details</Button>
                           </Link> */}
                           <Button onClick={() => handleRecordTransaction(loan.id)}>Borrow</Button>

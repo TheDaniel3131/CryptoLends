@@ -58,7 +58,7 @@ export function BuyToken() {
 
     return (
         <section className='flex-grow flex justify-center items-center'>
-            <div className="card shadow-md rounded-lg overflow-hidden max-w-sm">
+            <div className="card rounded-lg overflow-hidden max-w-sm">
                 <div className="p-4">
                     <h6 className="text-xl font-bold text-white-800">Buy Token</h6>
                     <div className="flex mt-4">

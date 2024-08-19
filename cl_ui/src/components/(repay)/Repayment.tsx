@@ -23,20 +23,20 @@ interface Repayment {
 
 const CONTRACT_ADDRESS = '0x90F79bf6EB2c4f870365E785982E1f101E93b906';
 const CONTRACT_ABI = [
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_loanId",
-          "type": "uint256"
-        }
-      ],
-      "name": "repayLoan",
-      "outputs": [],
-      "stateMutability": "payable",
-      "type": "function"
-    }
-  ];
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_loanId",
+        "type": "uint256"
+      }
+    ],
+    "name": "repayLoan",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  }
+];
 
 export default function Repayment() {
   const [search, setSearch] = useState("");
@@ -116,16 +116,16 @@ export default function Repayment() {
           throw new Error('Contract address is not set.');
         }
         const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-  
+
         // Convert amount to wei (assuming the contract uses ether as the unit)
         const amountInWei = ethers.utils.parseUnits(amount.toString(), 'ether');
-  
+
         console.log('Repaying loan with ID:', id);
         console.log('Amount in wei:', amountInWei.toString());
-  
+
         setTransactionPending(true);
         const tx = await contract.repayLoan(id, { value: amountInWei });
-  
+
         console.log('Transaction hash:', tx.hash);
         await tx.wait();
         toast.success('Repayment successful');
@@ -155,7 +155,7 @@ export default function Repayment() {
     } finally {
       setTransactionPending(false);
     }
-  };     
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -165,11 +165,11 @@ export default function Repayment() {
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Repay Dashboard</h1>
               <div className="flex items-center gap-4">
-                <Input 
-                  placeholder="Search repayments..." 
-                  value={search} 
-                  onChange={handleSearch} 
-                  className="max-w-xs" 
+                <Input
+                  placeholder="Search repayments..."
+                  value={search}
+                  onChange={handleSearch}
+                  className="max-w-xs"
                 />
               </div>
             </div>
@@ -202,12 +202,13 @@ export default function Repayment() {
                       <TableCell>{repayment.lending_or_borrowing_end_date}</TableCell>
                       <TableCell><Badge>{repayment.status}</Badge></TableCell>
                       <TableCell>
-                        <button
-                          onClick={() => handleRepay(repayment.id, repayment.token_amount)}
-                          className="text-blue-500 underline"
-                        >
-                          Repay
-                        </button>
+                        <Badge>
+                          <button
+                            onClick={() => handleRepay(repayment.id, repayment.token_amount)}
+                          >
+                            Repay
+                          </button>
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))

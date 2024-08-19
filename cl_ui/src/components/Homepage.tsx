@@ -124,7 +124,7 @@ export function Homepage() {
         <section className="py-16 px-6 md:px-12 bg-muted">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-4">
-              <h2 className="text-3xl font-bold">Buy & Sell CryptoLends Tokens</h2>
+              <h2 className="text-3xl font-bold">Buy CryptoLends Tokens</h2>
               <p className="text-muted-foreground">
                 Manage your CryptoLends tokens easily. Buy tokens to participate in lending and selling tokens to get liquidity.
               </p>

@@ -43,7 +43,6 @@ const CONTRACT_ABI = [
     }
 ];
 
-const CONTRACT_ADDRESS = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
 // Function to shorten wallet address
 function shortenAddress(address: string): string {
     if (address.length <= 10) {
@@ -59,40 +58,6 @@ export default function Component(): JSX.Element {
     const [loans, setLoans] = useState<Loan[]>([]);
     const [debtAmount, setDebtAmount] = useState<number>(0);
     const [lendAmount, setLendAmount] = useState(0);
-
-
-    // useEffect(() => {
-    //     const fetchBorrowingData = async () => {
-    //         if (!walletAddress) return;
-
-    //         try {
-    //             // Fetch debt amount from user_address table
-    //             const { data: userData, error: userError }: { data: any, error: any } = await supabase
-    //                 .from('user_address')
-    //                 .select('borrowing_amount')
-    //                 .eq('address', walletAddress)
-    //                 .single();
-
-    //             if (userError) throw userError;
-
-    //             setDebtAmount(userData?.borrowing_amount || 0);
-
-    //             // Fetch borrowing history from transaction_record table
-    //             const { data: transactionsData, error: transactionsError } = await supabase
-    //                 .from('transaction_record')
-    //                 .select('*')
-    //                 .eq('address_borrower', walletAddress);
-
-    //             if (transactionsError) throw transactionsError;
-
-    //             setTransactions(transactionsData);
-    //         } catch (error: any) {
-    //             console.error('Error fetching data:', error.message);
-    //         }
-    //     };
-
-    //     fetchBorrowingData();
-    // }, [walletAddress]);
 
     useEffect(() => {
         const fetchLoans = async () => {

@@ -23,7 +23,7 @@ import { lendingListInsert } from '../../supabase/query/lendingListInsert';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ICOContractAddress } from '@/utils/smartContractAddress';
-import ico from '@/abi/ICO.json';
+import ico from '../../abi/ICO.json';
 import { print } from "@/utils/toast";
 
 // SVG Icon components
@@ -293,8 +293,10 @@ export default function LendingPage() {
                                                 <SelectItem value="1">1 month</SelectItem>
                                                 <SelectItem value="3">3 months</SelectItem>
                                                 <SelectItem value="6">6 months</SelectItem>
+                                                <SelectItem value="9">9 months</SelectItem>
                                                 <SelectItem value="12">12 months</SelectItem>
                                                 <SelectItem value="18">18 months</SelectItem>
+                                                <SelectItem value="24">24 months</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -348,7 +350,7 @@ export default function LendingPage() {
                                 <ClockIcon className="h-8 w-8 mb-4 text-primary" />
                                 <h3 className="text-xl font-bold mb-2">Flexible Terms</h3>
                                 <p className="text-muted-foreground">
-                                    Choose from a variety of lending terms, from 1 month to 12 months, to fit your needs.
+                                    Choose from a variety of lending terms, from 1 month up to 24 months, to fit your needs.
                                 </p>
                             </div>
                             <div className="bg-muted p-6 rounded-xl shadow-sm">

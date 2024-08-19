@@ -38,7 +38,7 @@ export default function Component() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
   type LoanStatus = "Active" | "Pending" | "Completed";
-  type LoanDuration = "1 month" | "3 months" | "6 months" | "9 months" | "12 months" | "18 months" | "24 months";
+  type LoanDuration = "1 Month" | "3 Months" | "6 Months" | "9 Months" | "12 Months" | "18 Months" | "24 Months";
 
   type Loan = {
     [key: string]: any;
@@ -103,7 +103,7 @@ export default function Component() {
           const loanDurationMonths = loan.duration_return;
           const matchesDuration = filters.loanDuration.some(duration => {
             const [amount, unit] = duration.split(' ');
-            const filterMonths = unit === 'month' ? parseInt(amount) : parseInt(amount) * 12;
+            const filterMonths = unit === 'Month' ? parseInt(amount) : parseInt(amount) * 12;
             return loanDurationMonths === filterMonths;
           });
           if (!matchesDuration) {
@@ -147,12 +147,12 @@ export default function Component() {
     loanDuration: LoanDuration[];
   };
 
-  const handleFilter = <T extends keyof Filters>(type: T, value: Filters[T][number]) => {
+  const handleFilter = <T extends keyof Filters>(type: T, value: Filters[T][number] | string) => {
     setFilters((prevFilters: Filters) => ({
       ...prevFilters,
-      [type]: prevFilters[type]?.includes(value)
-        ? prevFilters[type].filter((item: Filters[T][number]) => item !== value)
-        : [...(prevFilters[type] || []), value],
+      [type as keyof Filters]: prevFilters[type as keyof Filters]?.includes(value)
+        ? prevFilters[type as keyof Filters].filter((item: Filters[T][number]) => item !== value)
+        : [...(prevFilters[type as keyof Filters] || []), value],
     }));
   };
 
@@ -208,7 +208,7 @@ export default function Component() {
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
         <section className="bg-background-dark py-16 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
+          <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Loan Dashboard</h1>
               <div className="flex items-center gap-4">
@@ -304,46 +304,46 @@ export default function Component() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-[200px]">
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("1 month")}
-                      onCheckedChange={() => handleFilter("loanDuration", "1 month")}
+                      checked={filters.loanDuration.includes("1 Month")}
+                      onCheckedChange={() => handleFilter("loanDuration", "1 Month")}
                     >
-                      1 month
+                      1 Month
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("3 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "3 months")}
+                      checked={filters.loanDuration.includes("3 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "3 Months")}
                     >
-                      3 months
+                      3 Months
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("6 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "6 months")}
+                      checked={filters.loanDuration.includes("6 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "6 Months")}
                     >
-                      6 months
+                      6 Months
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("9 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "9 months")}
+                      checked={filters.loanDuration.includes("9 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "9 Months")}
                     >
-                      9 months
+                      9 Months
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("12 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "12 months")}
+                      checked={filters.loanDuration.includes("12 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "12 Months")}
                     >
-                      12 months
+                      12 Months
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("18 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "18 months")}
+                      checked={filters.loanDuration.includes("18 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "18 Months")}
                     >
-                      18 months
+                      18 Months
                     </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("24 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "24 months")}
+                      checked={filters.loanDuration.includes("24 Months")}
+                      onCheckedChange={() => handleFilter("loanDuration", "24 Months")}
                     >
-                      24 months
+                      24 Months
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

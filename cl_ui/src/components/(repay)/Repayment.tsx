@@ -8,6 +8,8 @@ import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/component
 import { useAccount } from "wagmi";
 import { ethers } from "ethers";
 import { toast } from 'react-toastify';
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -20,6 +22,34 @@ interface Repayment {
   status: string;
 }
 
+
+interface SortButtonProps {
+  label: string;
+  sortKey: keyof Repayment;
+  currentSort: { key: keyof Repayment; order: "asc" | "desc" };
+  onSort: (key: keyof Repayment) => void;
+}
+
+const SortButton: React.FC<SortButtonProps> = ({ label, sortKey, currentSort, onSort }) => {
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => onSort(sortKey)}
+      className="h-8 px-2 lg:px-3"
+    >
+      {label}
+      {currentSort.key === sortKey ? (
+        currentSort.order === "asc" ? (
+          <ArrowUp className="ml-2 h-4 w-4" />
+        ) : (
+          <ArrowDown className="ml-2 h-4 w-4" />
+        )
+      ) : (
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      )}
+    </Button>
+  );
+};
 
 const CONTRACT_ADDRESS = '0x90F79bf6EB2c4f870365E785982E1f101E93b906';
 const CONTRACT_ABI = [
@@ -40,7 +70,7 @@ const CONTRACT_ABI = [
 
 export default function Repayment() {
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "id", order: "desc" });
+  const [sort, setSort] = useState<{ key: keyof Repayment; order: "asc" | "desc" }>({ key: "id", order: "desc" });
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [loading, setLoading] = useState(true);
   const { address } = useAccount(); // Retrieve the current Ethereum address from MetaMask
@@ -90,6 +120,7 @@ export default function Repayment() {
     return repayments
       .filter((repayment) => {
         const searchValue = search.toLowerCase();
+
         return (
           repayment.id.toString().includes(searchValue) ||
           repayment.address_borrower.toLowerCase().includes(searchValue) ||
@@ -99,12 +130,37 @@ export default function Repayment() {
           repayment.status.toLowerCase().includes(searchValue)
         );
       })
-      .sort((a, b) => sort.order === "asc" ? (a[sort.key] > b[sort.key] ? 1 : -1) : (a[sort.key] < b[sort.key] ? 1 : -1));
+      .sort((a, b) => {
+        if (!a || !b) return 0;
+
+        const aValue = a[sort.key as keyof Repayment];
+        const bValue = b[sort.key as keyof Repayment];
+
+        if (typeof aValue === 'string' && typeof bValue === 'string') {
+          return sort.order === "asc"
+            ? aValue.localeCompare(bValue)
+            : bValue.localeCompare(aValue);
+        }
+
+        if (typeof aValue === 'number' && typeof bValue === 'number') {
+          return sort.order === "asc" ? aValue - bValue : bValue - aValue;
+        }
+
+        // Fallback for other types
+        if (aValue < bValue) return sort.order === "asc" ? -1 : 1;
+        if (aValue > bValue) return sort.order === "asc" ? 1 : -1;
+        return 0;
+      });
   }, [search, sort, repayments]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value);
-  const handleSort = (key: keyof Repayment) => setSort({ key, order: sort.key === key && sort.order === "asc" ? "desc" : "asc" });
 
+  const handleSort = (key: keyof Repayment) => {
+    setSort((prevSort) => ({
+      key,
+      order: prevSort.key === key && prevSort.order === "asc" ? "desc" : "asc",
+    }));
+  };
   const [transactionPending, setTransactionPending] = useState(false);
 
   const handleRepay = async (id: number, amount: number) => {
@@ -131,9 +187,9 @@ export default function Repayment() {
         toast.success('Repayment successful');
 
         const { error } = await supabase
-        .from('transaction_record')
-        .update({ status: 'Repaid' })
-        .eq('id', id);
+          .from('transaction_record')
+          .update({ status: 'Repaid' })
+          .eq('id', id);
 
         if (error) {
           console.error('Error updating status:', error.message);
@@ -160,29 +216,35 @@ export default function Repayment() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        <section className="bg-background py-12 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
+        <section className="bg-background py-12 px-8 md:px-12">
+          <div className="max-w-7xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Repay Dashboard</h1>
               <div className="flex items-center gap-4">
-                <Input
-                  placeholder="Search repayments..."
-                  value={search}
-                  onChange={handleSearch}
-                  className="max-w-xs"
-                />
+                <Input placeholder="Search Repayments..." value={search} onChange={handleSearch} className="max-w-xs" />
               </div>
             </div>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead onClick={() => handleSort("id")}>ID</TableHead>
-                  <TableHead onClick={() => handleSort("address_borrower")}>Borrower Address</TableHead>
-                  <TableHead onClick={() => handleSort("token_amount")}>Amount</TableHead>
-                  <TableHead onClick={() => handleSort("lending_or_borrowing_start_date")}>Repayment Start Date</TableHead>
-                  <TableHead onClick={() => handleSort("lending_or_borrowing_end_date")}>Repayment End Date</TableHead>
-                  <TableHead onClick={() => handleSort("status")}>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="ID" sortKey="id" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Borrower Address" sortKey="address_borrower" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Amount" sortKey="token_amount" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Repayment Start Date" sortKey="lending_or_borrowing_start_date" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className="text-center">
+                    <SortButton label="Repayment End Date" sortKey="lending_or_borrowing_end_date" currentSort={sort} onSort={handleSort} />
+                  </TableHead>
+                  <TableHead className='text-center' onClick={() => handleSort("status")}>Status</TableHead>
+                  <TableHead className='text-center'>|</TableHead>
+                  <TableHead className="text-center">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -195,20 +257,20 @@ export default function Repayment() {
                 ) : filteredRepayments.length > 0 ? (
                   filteredRepayments.map((repayment) => (
                     <TableRow key={repayment.id}>
-                      <TableCell>{repayment.id}</TableCell>
-                      <TableCell>{repayment.address_borrower}</TableCell>
-                      <TableCell>{repayment.token_amount}</TableCell>
-                      <TableCell>{repayment.lending_or_borrowing_start_date}</TableCell>
-                      <TableCell>{repayment.lending_or_borrowing_end_date}</TableCell>
-                      <TableCell><Badge>{repayment.status}</Badge></TableCell>
-                      <TableCell>
-                        <Badge>
-                          <button
-                            onClick={() => handleRepay(repayment.id, repayment.token_amount)}
-                          >
-                            Repay
-                          </button>
-                        </Badge>
+                      <TableCell className='text-center'>{repayment.id}</TableCell>
+                      <TableCell className='text-center'>{repayment.address_borrower}</TableCell>
+                      <TableCell className='text-center'>{repayment.token_amount}</TableCell>
+                      <TableCell className='text-center'>{repayment.lending_or_borrowing_start_date}</TableCell>
+                      <TableCell className='text-center'>{repayment.lending_or_borrowing_end_date}</TableCell>
+                      <TableCell className='text-center'><Badge>{repayment.status}</Badge></TableCell>
+                      <TableCell className='text-center text-slate-500'>|</TableCell>
+                      <TableCell className='text-center'>
+                        <Button
+                          onClick={() => handleRepay(repayment.id, repayment.token_amount)}
+                          disabled={repayment.status === "Withdrew" || repayment.status === "Repaid"}
+                        >
+                          Repay
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))

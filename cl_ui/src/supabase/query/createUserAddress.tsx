@@ -15,3 +15,13 @@ export async function createUserAddress(address: string): Promise<boolean> {
     }
     return true;
 }
+
+export async function updateUserTokenAmount(address: string, amount: bigint) {
+    const { data, error } = await supabase
+        .from('user_address')
+        .update({ token_amount: amount.toString() })
+        .eq('address', address);
+
+    if (error) throw error;
+    return data;
+}   

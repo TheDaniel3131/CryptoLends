@@ -160,6 +160,14 @@ function ReceiptIcon(props: SVGProps<SVGSVGElement>) {
     );
 }
 
+// Function to shorten wallet address
+function shortenAddress(address: string): string {
+    if (address.length <= 10) {
+        return address;
+    }
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
 export default function LendingPage() {
     const { address } = useAccount();
     const [amount, setAmount] = useState<number>(0);
@@ -232,7 +240,7 @@ export default function LendingPage() {
         <div className="flex flex-col min-h-[100dvh]">
             <main className="flex-1">
                 <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
-                    <div className="max-w-3xl space-y-6 text-center">
+                    <div className="max-w-7xl space-y-6 text-center">
                         <h1 className="text-4xl font-bold">Lend Your Crypto</h1>
                         <p className="text-muted-foreground">
                             Earn passive income by lending your crypto assets to borrowers on our platform.
@@ -247,9 +255,9 @@ export default function LendingPage() {
                                     <Input
                                         id="address"
                                         type="text"
-                                        value={address || 'Not connected'}
+                                        value={shortenAddress(address) || 'Not connected'}
                                         disabled
-                                        className="bg-gray-100"
+                                        className="bg-gray-100 text-center"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">

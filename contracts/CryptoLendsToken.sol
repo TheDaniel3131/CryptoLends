@@ -67,18 +67,18 @@ contract CryptoLendsToken is ERC20, Ownable, Pausable {
     // Repay a loan
     event LoanRepaid(address borrower, address lender, uint256 amount);
 
-function repayLoan(uint _loanId) external payable whenNotPaused {
-    Loan storage loan = loans[_loanId];
-    
-    require(msg.sender == loan.borrower, "Only borrower can repay");
-    require(!loan.repaid, "Loan already repaid");
-    require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
-    
-    loan.lender.transfer(msg.value);  // Transfer funds to lender
-    loan.repaid = true;  // Mark the loan as repaid
-    
-    emit LoanRepaid(msg.sender, loan.lender, msg.value);  // Emit event for logging
-}
+    function repayLoan(uint _loanId) external payable whenNotPaused {
+        Loan storage loan = loans[_loanId];
+        
+        require(msg.sender == loan.borrower, "Only borrower can repay");
+        require(!loan.repaid, "Loan already repaid");
+        require(msg.value == loan.amount + loan.interest, "Incorrect repayment amount");
+        
+        loan.lender.transfer(msg.value);  // Transfer funds to lender
+        loan.repaid = true;  // Mark the loan as repaid
+        
+        emit LoanRepaid(msg.sender, loan.lender, msg.value);  // Emit event for logging
+    }
 
 
     // Buy tokens
@@ -97,12 +97,13 @@ function repayLoan(uint _loanId) external payable whenNotPaused {
     }
 
     event WithdrawalRequested(address indexed user, uint256 amount);
+
     // Withdraw contract balance (Only owner can withdraw)
     function withdrawal(uint256 amount) external onlyOwner {
         require(amount > 0, "Amount must be greater than zero");
-        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+        require(address(this).balance >= amount, "Insufficient contract balance");
 
         emit WithdrawalRequested(msg.sender, amount);
-        token.transfer(msg.sender, amount);
+        payable(msg.sender).transfer(amount);
     }
 }

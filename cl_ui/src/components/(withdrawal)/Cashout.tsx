@@ -11,16 +11,38 @@ import { Badge } from "@/components/ui/badge";
 import { withdrawToken } from "../../supabase/query/withdrawToken";
 import { transactionProcess } from "../../supabase/query/transactionProcess";
 import { createClient } from "@supabase/supabase-js";
+import { ethers } from "ethers";
+import { parseEther } from "viem";
+import { toast } from 'react-toastify';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Loan {
     id: number;
-    asset: string;
-    amount: number;
+    cryptocurrency: string;
+    token_amount: number;
     term: string;
     interest_rate: string;
     status: string;
     date: string;
 }
+
+const CONTRACT_ABI = [
+    {
+        "inputs": [
+            {
+            "internalType": "uint256",
+            "name": "_loanId",
+            "type": "uint256"
+            }
+        ],
+        "name": "withdrawal",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+  ];
+
+  const CONTRACT_ADDRESS = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
 
 const CashOutPage: React.FC = () => {
     const { address: walletAddress } = useAccount(); // Get the connected wallet address from wagmi
@@ -32,14 +54,14 @@ const CashOutPage: React.FC = () => {
             if (!walletAddress) return; // Exit if no wallet address is connected
 
             const supabaseUrl = "https://bqljlkdiicwfstzyesln.supabase.co";
-            const supabaseKey = "your_supabase_key";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbGpsa2RpaWN3ZnN0enllc2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMxODcwNjIsImV4cCI6MjAzODc2MzA2Mn0.HEpIt52lNN8MQAcDTmvhmA1-wD4n6UpR4ImVFbk55Qc";
             const supabase = createClient(supabaseUrl, supabaseKey);
 
             // Fetch active and pending loans for the connected wallet
             const { data: loansData, error } = await supabase
-                .from("lending_loans") // Replace with your actual table name
+                .from("transaction_record") // Replace with your actual table name
                 .select("*")
-                .or(`borrower.eq.${walletAddress},lender.eq.${walletAddress}`);
+                .or(`address_lender.eq.${walletAddress},address_borrower.eq.${walletAddress}`);
 
             if (error) {
                 console.error("Error fetching loans:", error.message);
@@ -53,20 +75,85 @@ const CashOutPage: React.FC = () => {
     }, [walletAddress]);
 
     const calculateTotalFunds = (loans: Loan[]) => {
-        const total = loans.reduce((acc, loan) => acc + (loan.status === "Active" || loan.status === "Pending" ? loan.amount : 0), 0);
+        const total = loans.reduce((acc, loan) => acc + (loan.status === "Repaid"? loan.token_amount : 0), 0);
         setTotalFunds(total);
     };
 
-    const handleWithdraw = async (loan: Loan) => {
-        if (!walletAddress) return; // Exit if no wallet address is connected
-
-        const success = await withdrawToken(walletAddress, loan.amount);
-        if (success) {
-            alert("Withdrawal successful!");
-        } else {
-            alert("Withdrawal failed.");
+    // Example function to fetch the token amount
+    const fetchTokenAmount = async (loanId: number): Promise<number> => {
+        const supabaseUrl = "https://bqljlkdiicwfstzyesln.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbGpsa2RpaWN3ZnN0enllc2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMxODcwNjIsImV4cCI6MjAzODc2MzA2Mn0.HEpIt52lNN8MQAcDTmvhmA1-wD4n6UpR4ImVFbk55Qc"; // Use environment variables for security
+        const supabase = createClient(supabaseUrl, supabaseKey);
+    
+        const { data, error } = await supabase
+            .from("transaction_record")
+            .select("token_amount")
+            .eq("id", loanId)
+            .single(); // Fetch a single record
+    
+        if (error) {
+            console.error("Error fetching token amount:", error.message);
+            throw error;
         }
+    
+        return data.token_amount;
     };
+
+    const [transactionPending, setTransactionPending] = useState(false);
+
+    const handleWithdraw = async (loan: Loan) => {
+        try {
+            if (!loan.token_amount) {
+                throw new Error('Token amount is not defined.');
+            }
+    
+            if (typeof window !== "undefined" && window.ethereum) {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                if (!CONTRACT_ADDRESS) {
+                    throw new Error('Contract address is not set.');
+                }
+                const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+    
+                // Convert amount to wei (assuming the contract uses ether as the unit)
+                const amountInWei = ethers.utils.parseUnits(loan.token_amount.toString(), 'ether');
+    
+                console.log('Withdrawal loan with ID:', loan.id);
+                console.log('Amount in wei:', amountInWei.toString());
+    
+                setTransactionPending(true);
+                const tx = await contract.withdrawal(loan.id, { value: amountInWei });
+    
+                console.log('Transaction hash:', tx.hash);
+                await tx.wait();
+                toast.success('Withdraw successful');
+    
+                const { error } = await supabase
+                    .from('transaction_record')
+                    .update({ status: 'Withdrew' })
+                    .eq('id', loan.id);
+    
+                if (error) {
+                    console.error('Error updating status:', error.message);
+                    toast.error('Error updating withdrawal status: ' + error.message);
+                } else {
+                    console.log(`Loan with ID ${loan.id} status updated to "Withdrew"`);
+                }
+    
+            } else {
+                toast.error('Ethereum provider not found');
+            }
+        } catch (error: any) {
+            console.error('Withdrawal error:', error);
+            if (error.code === 'ACTION_REJECTED') {
+                toast.info('Transaction was canceled by the user');
+            } else {
+                toast.error('Error processing withdrawal: ' + error.message);
+            }
+        } finally {
+            setTransactionPending(false);
+        }
+    };                          
 
     return (
         <div className="flex flex-col min-h-[100dvh]">
@@ -129,8 +216,8 @@ const CashOutPage: React.FC = () => {
                                 <TableBody>
                                     {loans.map((loan) => (
                                         <TableRow key={loan.id}>
-                                            <TableCell>{loan.asset}</TableCell>
-                                            <TableCell>{loan.amount}</TableCell>
+                                            <TableCell>{loan.cryptocurrency}</TableCell>
+                                            <TableCell>{loan.token_amount}</TableCell>
                                             <TableCell>{loan.term}</TableCell>
                                             <TableCell>{loan.interest_rate}</TableCell>
                                             <TableCell>

@@ -291,62 +291,6 @@ export default function Component() {
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      Loan Duration
-                      {filters.loanDuration.length > 0 && (
-                        <span className="ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground">
-                          {filters.loanDuration.length}
-                        </span>
-                      )}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-[200px]">
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("1 Month")}
-                      onCheckedChange={() => handleFilter("loanDuration", "1 Month")}
-                    >
-                      1 Month
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("3 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "3 Months")}
-                    >
-                      3 Months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("6 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "6 Months")}
-                    >
-                      6 Months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("9 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "9 Months")}
-                    >
-                      9 Months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("12 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "12 Months")}
-                    >
-                      12 Months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("18 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "18 Months")}
-                    >
-                      18 Months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("24 Months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "24 Months")}
-                    >
-                      24 Months
-                    </DropdownMenuCheckboxItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
               </div>
               <Table>
                 <TableHeader>

@@ -150,7 +150,10 @@ export default function Repayment() {
       });
   }, [search, sort, repayments]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value);
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearch(searchValue);
+  };
 
   const handleSort = (key: keyof Repayment) => {
     setSort((prevSort) => ({

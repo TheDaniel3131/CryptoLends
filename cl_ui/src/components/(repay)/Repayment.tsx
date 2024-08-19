@@ -267,6 +267,7 @@ export default function Repayment() {
                       <TableCell className='text-center'>
                         <Button
                           onClick={() => handleRepay(repayment.id, repayment.token_amount)}
+                          disabled={repayment.status === "Withdrew"}
                         >
                           Repay
                         </Button>

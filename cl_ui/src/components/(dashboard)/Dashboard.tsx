@@ -65,10 +65,10 @@ export default function Component(): JSX.Element {
             <main className="flex-1">
                 <section className="bg-muted py-16 px-6 md:px-12 flex flex-col items-center justify-center gap-8">
                     <div className="max-w-3xl space-y-6 text-center">
-                        <h1 className="text-4xl font-bold">My Borrowing Dashboard</h1>
-                        <p className="text-muted-foreground">Track your own borrowing history, current debt, and profile details.</p>
+                        <h1 className="text-4xl font-bold">My Profile</h1>
+                        <p className="text-muted-foreground">View and track your own borrowing history, current debt, and profile details.</p>
                         <div className="bg-background p-6 rounded-xl shadow-sm grid gap-4">
-                            <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid md:grid-cols-2 gap-8">
                                 <Card>
                                     <CardHeader>
                                         <CardTitle>Current Debt</CardTitle>
@@ -97,11 +97,11 @@ export default function Component(): JSX.Element {
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="wallet" className="text-center">Wallet Address:</Label>
-                                        <Input id="wallet" type="text" value={shortenAddress(address) || 'N/A'} disabled className="text-center" />
+                                        <Input id="wallet" type="text" value={shortenAddress(address) || 'N/A'} disabled className="text-center bg-slate-300" />
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="collateral" className="text-center">Collateral:</Label>
-                                        <Input id="collateral" type="text" value={lendAmount + ' CLT' || '0 CLT'} disabled className="text-center" />
+                                        <Input id="collateral" type="text" value={lendAmount + ' CLT' || '0 CLT'} disabled className="text-center bg-slate-200" />
                                     </div>
                                 </CardContent>
                             </Card>

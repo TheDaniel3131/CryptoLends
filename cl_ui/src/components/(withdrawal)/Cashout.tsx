@@ -179,7 +179,7 @@ const CashOutPage: React.FC = () => {
                                         <CardTitle>Total Funds to Withdraw</CardTitle>
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
-                                        <div className="text-4xl font-bold">${totalFunds}</div>
+                                        <div className="text-4xl font-bold"> ${totalFunds}</div>
                                     </CardContent>
                                 </Card>
                                 <Card>

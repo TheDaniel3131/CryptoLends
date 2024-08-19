@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { supabase } from '../../supabase/query/dashboard';
+// import { supabase } from '../../supabase/query/dashboard';
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -10,7 +10,40 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from '@/lib/supabaseClient';
+import { createClient } from "@supabase/supabase-js";
+import { ethers } from "ethers";
+import { parseEther } from "viem";
+import { toast } from 'react-toastify';
 
+interface Loan {
+    id: number;
+    cryptocurrency: string;
+    token_amount: number;
+    term: string;
+    interest_rate: string;
+    status: string;
+    lending_or_borrowing_start_date: string;
+    lending_or_borrowing_end_date: string;
+}
+
+const CONTRACT_ABI = [
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "_loanId",
+                "type": "uint256"
+            }
+        ],
+        "name": "withdrawal",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    }
+];
+
+const CONTRACT_ADDRESS = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
 // Function to shorten wallet address
 function shortenAddress(address: string): string {
     if (address.length <= 10) {
@@ -21,44 +54,87 @@ function shortenAddress(address: string): string {
 
 
 export default function Component(): JSX.Element {
-    const { address = '' } = useAccount();
-    const [transactions, setTransactions] = useState([]);
-    const [debtAmount, setDebtAmount] = useState(0);
+    const { address: walletAddress } = useAccount(); // Get the connected wallet address from wagmi
+    const [transactions, setTransactions] = useState<Loan[]>([]);
+    const [loans, setLoans] = useState<Loan[]>([]);
+    const [debtAmount, setDebtAmount] = useState<number>(0);
     const [lendAmount, setLendAmount] = useState(0);
 
+
+    // useEffect(() => {
+    //     const fetchBorrowingData = async () => {
+    //         if (!walletAddress) return;
+
+    //         try {
+    //             // Fetch debt amount from user_address table
+    //             const { data: userData, error: userError }: { data: any, error: any } = await supabase
+    //                 .from('user_address')
+    //                 .select('borrowing_amount')
+    //                 .eq('address', walletAddress)
+    //                 .single();
+
+    //             if (userError) throw userError;
+
+    //             setDebtAmount(userData?.borrowing_amount || 0);
+
+    //             // Fetch borrowing history from transaction_record table
+    //             const { data: transactionsData, error: transactionsError } = await supabase
+    //                 .from('transaction_record')
+    //                 .select('*')
+    //                 .eq('address_borrower', walletAddress);
+
+    //             if (transactionsError) throw transactionsError;
+
+    //             setTransactions(transactionsData);
+    //         } catch (error: any) {
+    //             console.error('Error fetching data:', error.message);
+    //         }
+    //     };
+
+    //     fetchBorrowingData();
+    // }, [walletAddress]);
+
     useEffect(() => {
-        const fetchBorrowingData = async () => {
-            if (!address) return;
+        const fetchLoans = async () => {
+            if (!walletAddress) return; // Exit if no wallet address is connected
 
-            try {
-                // Fetch debt amount from user_address table
-                const { data: userData, error: userError } = await supabase
-                    .from('user_address')
-                    .select('borrowing_amount')
-                    .eq('address', address)
-                    .single();
+            const supabaseUrl = "https://bqljlkdiicwfstzyesln.supabase.co";
+            const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJxbGpsa2RpaWN3ZnN0enllc2xuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjMxODcwNjIsImV4cCI6MjAzODc2MzA2Mn0.HEpIt52lNN8MQAcDTmvhmA1-wD4n6UpR4ImVFbk55Qc";
+            const supabase = createClient(supabaseUrl, supabaseKey);
 
-                if (userError) throw userError;
+            // Fetch active and pending loans for the connected wallet
+            const { data: loansData, error } = await supabase
+                .from("transaction_record") // Replace with your actual table name
+                .select("*")
+                .or(`address_lender.eq.${walletAddress},address_borrower.eq.${walletAddress}`);
 
-                setDebtAmount(userData?.borrowing_amount || 0);
-                setLendAmount(userData?.lending_amount || 0);
-
-                // Fetch borrowing history from transaction_record table
-                const { data: transactionsData, error: transactionsError } = await supabase
-                    .from('transaction_record')
-                    .select('*')
-                    .eq('address_borrower', address);
-
-                if (transactionsError) throw transactionsError;
-
-                setTransactions(transactionsData);
-            } catch (error) {
-                console.error('Error fetching data:', error.message);
+            if (error) {
+                console.error("Error fetching loans:", error.message);
+            } else {
+                setLoans(loansData || []);
+                calculateTotalFunds(loansData || []);
             }
+
+            // Fetch borrowing history from transaction_record table
+            const { data: transactionsData, error: transactionsError } = await supabase
+                .from('transaction_record')
+                .select('*')
+                .eq('address_borrower', walletAddress);
+
+            if (transactionsError) throw transactionsError;
+
+            setTransactions(transactionsData);
         };
 
-        fetchBorrowingData();
-    }, [address]);
+        fetchLoans();
+    }, [walletAddress]);
+
+
+    const calculateTotalFunds = (loans: Loan[]) => {
+        const total = loans.reduce((acc, loan) => acc + (loan.status === "Repaid" ? loan.token_amount : 0), 0);
+        setDebtAmount(total);
+    };
+
 
     return (
         <div className="flex flex-col min-h-[100dvh]">
@@ -75,7 +151,7 @@ export default function Component(): JSX.Element {
                                     </CardHeader>
                                     <CardContent className="flex items-center justify-center py-8">
                                         <div className="text-4xl font-bold">
-                                            {debtAmount} CLT
+                                            ${debtAmount}
                                         </div>
                                     </CardContent>
                                 </Card>
@@ -97,7 +173,7 @@ export default function Component(): JSX.Element {
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="wallet" className="text-center">Wallet Address:</Label>
-                                        <Input id="wallet" type="text" value={shortenAddress(address) || 'N/A'} disabled className="text-center bg-slate-300" />
+                                        <Input id="wallet" type="text" value={walletAddress ? shortenAddress(walletAddress) : 'N/A'} disabled className="text-center bg-slate-300" />
                                     </div>
                                     <div className="grid gap-2">
                                         <Label htmlFor="collateral" className="text-center">Collateral:</Label>

@@ -129,6 +129,19 @@ export default function Repayment() {
         console.log('Transaction hash:', tx.hash);
         await tx.wait();
         toast.success('Repayment successful');
+
+        const { error } = await supabase
+        .from('transaction_record')
+        .update({ status: 'Repaid' })
+        .eq('id', id);
+
+        if (error) {
+          console.error('Error updating status:', error.message);
+          toast.error('Error updating repayment status: ' + error.message);
+        } else {
+          console.log(`Loan with ID ${id} status updated to "Repaid"`);
+        }
+
       } else {
         toast.error('Ethereum provider not found');
       }

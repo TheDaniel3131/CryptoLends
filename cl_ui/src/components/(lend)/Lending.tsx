@@ -23,7 +23,7 @@ import { lendingListInsert } from '../../supabase/query/lendingListInsert';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { ICOContractAddress } from '@/utils/smartContractAddress';
-import ico from '../../abi/ICO.json';
+import ico from '@/abi/ico.json';
 import { print } from "@/utils/toast";
 
 // SVG Icon components

@@ -102,9 +102,17 @@ contract ICO is Pausable, Ownable {
         _unpause();
     }
 
-    function withdrawal() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+    event WithdrawalRequested(address indexed user, uint256 amount);
+
+    function withdrawal(uint256 amount) external onlyOwner {
+        require(amount > 0, "Amount must be greater than zero");
+        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+
+        emit WithdrawalRequested(msg.sender, amount);
+        token.transfer(msg.sender, amount);
     }
+
+
 
     function setPhase(uint _phase, uint _multiplier, uint _cap) external onlyOwner {
         phasePriceMultiplier[_phase] = _multiplier;

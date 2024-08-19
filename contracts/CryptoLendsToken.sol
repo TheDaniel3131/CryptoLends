@@ -96,8 +96,13 @@ function repayLoan(uint _loanId) external payable whenNotPaused {
         payable(msg.sender).transfer(ethAmount);
     }
 
+    event WithdrawalRequested(address indexed user, uint256 amount);
     // Withdraw contract balance (Only owner can withdraw)
-    function withdraw() external onlyOwner {
-        payable(owner()).transfer(address(this).balance);
+    function withdrawal(uint256 amount) external onlyOwner {
+        require(amount > 0, "Amount must be greater than zero");
+        require(token.balanceOf(address(this)) >= amount, "Insufficient balance");
+
+        emit WithdrawalRequested(msg.sender, amount);
+        token.transfer(msg.sender, amount);
     }
 }

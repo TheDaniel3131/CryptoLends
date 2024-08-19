@@ -70,7 +70,7 @@ const CONTRACT_ABI = [
 
 export default function Repayment() {
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ key: "id", order: "desc" });
+  const [sort, setSort] = useState<{ key: keyof Repayment; order: "asc" | "desc" }>({ key: "id", order: "desc" });
   const [repayments, setRepayments] = useState<Repayment[]>([]);
   const [loading, setLoading] = useState(true);
   const { address } = useAccount(); // Retrieve the current Ethereum address from MetaMask
@@ -120,6 +120,7 @@ export default function Repayment() {
     return repayments
       .filter((repayment) => {
         const searchValue = search.toLowerCase();
+
         return (
           repayment.id.toString().includes(searchValue) ||
           repayment.address_borrower.toLowerCase().includes(searchValue) ||
@@ -130,8 +131,10 @@ export default function Repayment() {
         );
       })
       .sort((a, b) => {
-        const aValue = a[sort.key];
-        const bValue = b[sort.key];
+        if (!a || !b) return 0;
+
+        const aValue = a[sort.key as keyof Repayment];
+        const bValue = b[sort.key as keyof Repayment];
 
         if (typeof aValue === 'string' && typeof bValue === 'string') {
           return sort.order === "asc"
@@ -150,10 +153,7 @@ export default function Repayment() {
       });
   }, [search, sort, repayments]);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const searchValue = e.target.value.toLowerCase();
-    setSearch(searchValue);
-  };
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value);
 
   const handleSort = (key: keyof Repayment) => {
     setSort((prevSort) => ({
@@ -221,12 +221,7 @@ export default function Repayment() {
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Repay Dashboard</h1>
               <div className="flex items-center gap-4">
-                <Input
-                  placeholder="Search repayments..."
-                  value={search}
-                  onChange={handleSearch}
-                  className="max-w-6xl"
-                />
+                <Input placeholder="Search Repayments..." value={search} onChange={handleSearch} className="max-w-xs" />
               </div>
             </div>
             <Table>

@@ -160,6 +160,14 @@ function ReceiptIcon(props: SVGProps<SVGSVGElement>) {
     );
 }
 
+// Function to shorten wallet address
+function shortenAddress(address: string): string {
+    if (address.length <= 10) {
+        return address;
+    }
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+}
+
 export default function LendingPage() {
     const { address } = useAccount();
     const [amount, setAmount] = useState<number>(0);
@@ -247,9 +255,9 @@ export default function LendingPage() {
                                     <Input
                                         id="address"
                                         type="text"
-                                        value={address || 'Not connected'}
+                                        value={shortenAddress(address) || 'Not connected'}
                                         disabled
-                                        className="bg-gray-100"
+                                        className="bg-gray-100 text-center"
                                     />
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">

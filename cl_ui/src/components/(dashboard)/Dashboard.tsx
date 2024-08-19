@@ -92,7 +92,7 @@ export default function Component(): JSX.Element {
                             </div>
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-center mb-2">My Profile</CardTitle>
+                                    <CardTitle className="text-center mb-2 font-bold">My Profile</CardTitle>
                                 </CardHeader>
                                 <CardContent className="grid gap-4">
                                     <div className="grid gap-2">

@@ -12,6 +12,11 @@ import ico from '@/abi/ICO.json';
 import { parseEther } from 'viem';
 import { transactionProcess } from '../../supabase/query/transactionProcess';
 import { print } from "@/utils/toast";
+import crypto from 'crypto';
+
+function hashAddress(address: string): string {
+  return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
 
 
 const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
@@ -138,7 +143,7 @@ const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
 
 interface LoanDetails {
   cryptocurrency: string;
-  id: number;
+  id: string;
   lending_amount: number;
   duration_return: number;
   interest_rate: number;
@@ -146,6 +151,8 @@ interface LoanDetails {
   status: string;
   address: string;
 }
+
+
 
 // Function to shorten wallet address
 function shortenAddress(address: string): string {
@@ -163,25 +170,70 @@ export function BDetails() {
   const searchParams = useSearchParams();
   const loanId = searchParams.get('id');
   const router = useRouter();
-
-  const { address } = useAccount();
   const [message, setMessage] = useState('');
-
+  const { address: currentUserAddress } = useAccount();
+  
   const { data: simulateData, error: simulateError } = useSimulateContract({
     address: ICOContractAddress as `0x${string}`,
     abi: ico.abi,
     functionName: 'borrowToken',
     args: [parseEther(loanDetails?.lending_amount.toString() || '0')],
-    account: address
-  })
+  });
 
   const { data: hash, error: writeError, writeContract } = useWriteContract()
+  const [addressesHashed, setAddressesHashed] = useState(false);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
+  
     useWaitForTransactionReceipt({
       hash,
     })
 
+    // function to hash all unhashed wallet addresses
+    useEffect(() => {
+      async function hashAllWalletAddresses() {
+        if (addressesHashed) return; // Skip if already hashed
+  
+        // Fetch all wallet addresses
+        const { data, error } = await supabase
+          .from('lending_list')
+          .select('id, address');
+  
+        if (error) {
+          console.error('Error fetching wallet addresses:', error);
+          return;
+        }
+  
+        // Hash each address that is not already hashed
+        for (const record of data) {
+          // Check if the address is already hashed
+          if (isAddressHashed(record.address)) continue;
+  
+          const hashedAddress = hashAddress(record.address);
+  
+          const { error: updateError } = await supabase
+            .from('lending_list')
+            .update({ address: hashedAddress })
+            .eq('id', record.id);
+  
+          if (updateError) {
+            console.error(`Error updating record ID ${record.id}:`, updateError);
+          } else {
+            console.log(`Successfully hashed address for record ID ${record.id}`);
+          }
+        }
+  
+        setAddressesHashed(true); // Set the state to indicate addresses are hashed
+      }
+  
+      function isAddressHashed(address: string): boolean {
+        // Example check: if the address length is not 42 (standard Ethereum address length), assume it's hashed
+        return address.length !== 42;
+      }
+  
+      hashAllWalletAddresses();
+    }, [addressesHashed]);
+    
   useEffect(() => {
     async function fetchLoanDetails() {
       if (!loanId) return;
@@ -204,60 +256,65 @@ export function BDetails() {
     }
 
     fetchLoanDetails();
+    
   }, [loanId]);
 
-  useEffect(() => {
-    if (isConfirmed && hash && loanDetails) {
-      transactionProcess(
-        loanDetails.address, // lender
-        address!, // borrower
-        loanDetails.lending_amount, // amount
-        loanDetails.cryptocurrency, // currency
-        loanDetails.duration_return, // durationMonth
-        loanDetails.interest_rate // rate
-      )
-        .then((result) => {
-          setMessage(result ? 'Your borrowing entry has been successfully recorded!' : 'Failed to add your borrowing entry.');
-          print("Borrowing transaction confirmed and recorded in the database.", "success");
-        })
-        .catch((error) => {
-          console.error("Error inserting borrowing entry:", error);
-          print("Failed to record borrowing entry in the database.", "error");
+
+  
+  
+  const handleRecordTransaction = async (loanId: string) => {
+    try {
+      // Fetch the details of the loan
+      const { data: loanDetails, error: fetchError } = await supabase
+        .from('lending_list')
+        .select('*')
+        .eq('id', loanId)
+        .single();
+
+      if (fetchError) {
+        throw fetchError;
+      }
+
+      // Prepare the data to insert
+      const { address: lenderAddress, lending_amount, duration_return, interest_rate, cryptocurrency } = loanDetails;
+
+      const hashedBorrowerAddress = hashAddress(currentUserAddress!);
+
+      const startDate = new Date();
+      const endDate = new Date(startDate);
+      endDate.setMonth(startDate.getMonth() + duration_return);
+
+
+      const { error: insertError } = await supabase
+        .from('transaction_record')
+        .insert({
+          address_lender: lenderAddress,
+          address_borrower: hashedBorrowerAddress, // Ensure address is hashed
+          token_amount: lending_amount,
+          lending_or_borrowing_start_date: startDate.toISOString(),
+          lending_or_borrowing_end_date: endDate.toISOString(),
+          interest_rate,
+          status: 'Pending',
+          cryptocurrency,
+          term: duration_return
         });
-    }
-  }, [isConfirmed, hash, address, loanDetails]);
+
+      if (insertError) {
+        throw insertError;
+      }
+      if (!currentUserAddress) {
+        print("Please connect your wallet first.", "error");
+        return;
+      }
   
 
-  const handleBorrow = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!address) {
-      print("Please connect your wallet first.", "error");
-      return;
-    }
-
-    if (!loanDetails) {
-      print("No loan details available.", "error");
-      return;
-    }
-
-    if (simulateError) {
-      print("Error simulating transaction: " + simulateError.message, "error");
-      return;
-    }
-
-    if (!simulateData) {
-      print("Simulated data is unavailable. Please try again later.", "error");
-      return;
-    }
-
-    try {
-      const tx = await writeContract(simulateData.request);
-      print("Borrowing transaction submitted. Waiting for confirmation...", "info");
+      alert('Transaction recorded successfully!');
     } catch (error) {
-      print("Failed to submit borrowing transaction: " + (error as Error).message, "error");
+      console.error('Error recording transaction:', error);
+      alert('Failed to record transaction.');
     }
   };
+  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -310,9 +367,7 @@ export function BDetails() {
                 </div>
               </div>
               <div className="flex justify-center mt-8">
-                <Button onClick={handleBorrow} disabled={!address || isConfirming}>
-                  {isConfirming ? 'Confirming...' : 'Borrow'}
-                </Button>
+              <Button onClick={() => handleRecordTransaction(loanDetails.id)}>Borrow</Button>
               </div>
             </div>
           </div>

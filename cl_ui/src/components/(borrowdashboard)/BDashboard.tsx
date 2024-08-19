@@ -38,7 +38,7 @@ export default function Component() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
   type LoanStatus = "Active" | "Pending" | "Completed";
-  type LoanDuration = "1 month" | "3 months" | "6 months" | "9 months" | "12 months" | "18 months" | "24 months";
+  type LoanDuration = "1 Month" | "3 Months" | "6 Months" | "9 Months" | "12 Months" | "18 Months" | "24 Months";
 
   type Loan = {
     [key: string]: any;
@@ -103,7 +103,7 @@ export default function Component() {
           const loanDurationMonths = loan.duration_return;
           const matchesDuration = filters.loanDuration.some(duration => {
             const [amount, unit] = duration.split(' ');
-            const filterMonths = unit === 'month' ? parseInt(amount) : parseInt(amount) * 12;
+            const filterMonths = unit === 'Month' ? parseInt(amount) : parseInt(amount) * 12;
             return loanDurationMonths === filterMonths;
           });
           if (!matchesDuration) {
@@ -147,12 +147,12 @@ export default function Component() {
     loanDuration: LoanDuration[];
   };
 
-  const handleFilter = <T extends keyof Filters>(type: T, value: Filters[T][number]) => {
+  const handleFilter = <T extends keyof Filters>(type: T, value: Filters[T][number] | string) => {
     setFilters((prevFilters: Filters) => ({
       ...prevFilters,
-      [type]: prevFilters[type]?.includes(value)
-        ? prevFilters[type].filter((item: Filters[T][number]) => item !== value)
-        : [...(prevFilters[type] || []), value],
+      [type as keyof Filters]: prevFilters[type as keyof Filters]?.includes(value)
+        ? prevFilters[type as keyof Filters].filter((item: Filters[T][number]) => item !== value)
+        : [...(prevFilters[type as keyof Filters] || []), value],
     }));
   };
 
@@ -194,11 +194,6 @@ export default function Component() {
       if (insertError) {
         throw insertError;
       }
-      if (!currentUserAddress) {
-        print("Please connect your wallet first.", "error");
-        return;
-      }
-  
 
       alert('Transaction recorded successfully!');
     } catch (error) {
@@ -213,7 +208,7 @@ export default function Component() {
     <div className="flex flex-col min-h-[100dvh]">
       <main className="flex-1">
         <section className="bg-background-dark py-16 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto space-y-8">
+          <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold">Loan Dashboard</h1>
               <div className="flex items-center gap-4">
@@ -293,62 +288,6 @@ export default function Component() {
                       onCheckedChange={() => handleFilter("loanStatus", "Completed")}
                     >
                       Completed
-                    </DropdownMenuCheckboxItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      Loan Duration
-                      {filters.loanDuration.length > 0 && (
-                        <span className="ml-2 bg-primary px-2 py-1 rounded-full text-xs text-primary-foreground">
-                          {filters.loanDuration.length}
-                        </span>
-                      )}
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-[200px]">
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("1 month")}
-                      onCheckedChange={() => handleFilter("loanDuration", "1 month")}
-                    >
-                      1 month
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("3 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "3 months")}
-                    >
-                      3 months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("6 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "6 months")}
-                    >
-                      6 months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("9 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "9 months")}
-                    >
-                      9 months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("12 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "12 months")}
-                    >
-                      12 months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("18 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "18 months")}
-                    >
-                      18 months
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem
-                      checked={filters.loanDuration.includes("24 months")}
-                      onCheckedChange={() => handleFilter("loanDuration", "24 months")}
-                    >
-                      24 months
                     </DropdownMenuCheckboxItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

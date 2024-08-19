@@ -12,6 +12,11 @@ import ico from '@/abi/ICO.json';
 import { parseEther } from 'viem';
 import { transactionProcess } from '../../supabase/query/transactionProcess';
 import { print } from "@/utils/toast";
+import crypto from 'crypto';
+
+function hashAddress(address: string): string {
+  return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
 
 
 const LockIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
@@ -176,6 +181,7 @@ export function BDetails() {
   });
 
   const { data: hash, error: writeError, writeContract } = useWriteContract()
+  const [addressesHashed, setAddressesHashed] = useState(false);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
   
@@ -183,6 +189,51 @@ export function BDetails() {
       hash,
     })
 
+    // function to hash all unhashed wallet addresses
+    useEffect(() => {
+      async function hashAllWalletAddresses() {
+        if (addressesHashed) return; // Skip if already hashed
+  
+        // Fetch all wallet addresses
+        const { data, error } = await supabase
+          .from('lending_list')
+          .select('id, address');
+  
+        if (error) {
+          console.error('Error fetching wallet addresses:', error);
+          return;
+        }
+  
+        // Hash each address that is not already hashed
+        for (const record of data) {
+          // Check if the address is already hashed
+          if (isAddressHashed(record.address)) continue;
+  
+          const hashedAddress = hashAddress(record.address);
+  
+          const { error: updateError } = await supabase
+            .from('lending_list')
+            .update({ address: hashedAddress })
+            .eq('id', record.id);
+  
+          if (updateError) {
+            console.error(`Error updating record ID ${record.id}:`, updateError);
+          } else {
+            console.log(`Successfully hashed address for record ID ${record.id}`);
+          }
+        }
+  
+        setAddressesHashed(true); // Set the state to indicate addresses are hashed
+      }
+  
+      function isAddressHashed(address: string): boolean {
+        // Example check: if the address length is not 42 (standard Ethereum address length), assume it's hashed
+        return address.length !== 42;
+      }
+  
+      hashAllWalletAddresses();
+    }, [addressesHashed]);
+    
   useEffect(() => {
     async function fetchLoanDetails() {
       if (!loanId) return;
@@ -205,9 +256,11 @@ export function BDetails() {
     }
 
     fetchLoanDetails();
+    
   }, [loanId]);
 
 
+  
   
   const handleRecordTransaction = async (loanId: string) => {
     try {
@@ -217,66 +270,48 @@ export function BDetails() {
         .select('*')
         .eq('id', loanId)
         .single();
-      
+
       if (fetchError) {
         throw fetchError;
       }
-  
+
       // Prepare the data to insert
       const { address: lenderAddress, lending_amount, duration_return, interest_rate, cryptocurrency } = loanDetails;
-  
+
+      const hashedBorrowerAddress = hashAddress(currentUserAddress!);
+
       const startDate = new Date();
       const endDate = new Date(startDate);
       endDate.setMonth(startDate.getMonth() + duration_return);
-  
+
+
+      const { error: insertError } = await supabase
+        .from('transaction_record')
+        .insert({
+          address_lender: lenderAddress,
+          address_borrower: hashedBorrowerAddress, // Ensure address is hashed
+          token_amount: lending_amount,
+          lending_or_borrowing_start_date: startDate.toISOString(),
+          lending_or_borrowing_end_date: endDate.toISOString(),
+          interest_rate,
+          status: 'Pending',
+          cryptocurrency,
+          term: duration_return
+        });
+
+      if (insertError) {
+        throw insertError;
+      }
       if (!currentUserAddress) {
         print("Please connect your wallet first.", "error");
         return;
       }
   
-      if (simulateError) {
-        print("Error simulating transaction: " + simulateError.message, "error");
-        return;
-      }
-  
-      if (!simulateData) {
-        print("Simulated data is unavailable. Please try again later.", "error");
-        return;
-      }
-  
-      try {
-        // Submit the transaction
-        const tx = await writeContract(simulateData.request);
-        print("Transaction submitted. Waiting for confirmation...", "info");
-  
-        // Wait for transaction confirmation
-        await isConfirmed;
-        
-        // Insert into transaction_record table after successful transaction
-        const { error: insertError } = await supabase
-          .from('transaction_record')
-          .insert({
-            address_lender: lenderAddress,
-            address_borrower: currentUserAddress!,
-            token_amount: lending_amount,
-            lending_or_borrowing_start_date: startDate.toISOString(),
-            lending_or_borrowing_end_date: endDate.toISOString(),
-            interest_rate,
-            status: 'Completed', // Update status as needed
-            cryptocurrency,
-            term: duration_return
-          });
-  
-        if (insertError) {
-          throw insertError;
-        }
-  
-        print("Transaction recorded successfully!", "success");
-      } catch (error) {
-        print("Failed to submit transaction: " + (error as Error).message, "error");
-      }
+
+      alert('Transaction recorded successfully!');
     } catch (error) {
-      print("Error recording transaction: " + (error as Error).message, "error");
+      console.error('Error recording transaction:', error);
+      alert('Failed to record transaction.');
     }
   };
   

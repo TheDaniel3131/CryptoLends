@@ -23,6 +23,7 @@
     "@web3modal/wagmi": "^5.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "crypto-js": "^4.2.0",
     "date-fns": "^3.6.0",
     "heroicons": "^2.1.5",
     "lucide-react": "^0.408.0",
@@ -39,6 +40,7 @@
     "wagmi": "^2.12.5"
   },
   "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
     "@types/node": "^20",
     "@types/nodemailer": "^6.4.15",
     "@types/react": "^18",

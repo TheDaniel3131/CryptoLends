@@ -1,8 +1,5 @@
-// src/components/(borrowdashboard)/BDashboard.tsx
-
 "use client";
 
-import BDetails from '@/components/(bdetails)/BDetails';
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -10,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuCheckboxItem } from "@/components/ui/dropdown-menu";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from '@/lib/supabaseClient'; // Make sure this import is correct
+import { supabase } from '@/lib/supabaseClient';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { ICOContractAddress } from '@/utils/smartContractAddress';
 import ico from '@/abi/ICO.json';
@@ -24,7 +21,6 @@ function hashAddress(address: string): string {
   return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
 }
 
-
 interface Loan {
   cryptocurrency: string;
   id: number;
@@ -34,7 +30,6 @@ interface Loan {
   loan_status: string;
   status: string;
   address: string;
-
 }
 
 export default function Component() {
@@ -42,12 +37,15 @@ export default function Component() {
   const { address: currentUserAddress } = useAccount();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ key: "lending_amount", order: "desc" });
+  const [borrowedLoans, setBorrowedLoans] = useState<Set<string>>(new Set());
+
   type LoanStatus = "Active" | "Pending" | "Completed";
   type LoanDuration = "1 Month" | "3 Months" | "6 Months" | "9 Months" | "12 Months" | "18 Months" | "24 Months";
 
   type Loan = {
     [key: string]: any;
   };
+
   const [filters, setFilters] = useState<{
     loanStatus: LoanStatus[],
     loanDuration: LoanDuration[],
@@ -87,7 +85,6 @@ export default function Component() {
         const interestRate = typeof loan.interest_rate === 'number' ? loan.interest_rate.toString() : '';
         const cryptocurrency = typeof loan.cryptocurrency === 'string' ? loan.cryptocurrency.toLowerCase() : '';
 
-
         return (
           id.includes(searchValue) ||
           loanStatus.includes(searchValue) ||
@@ -117,7 +114,6 @@ export default function Component() {
         }
         return true;
       })
-
       .sort((a, b) => {
         if (!a || !b) return 0;
 
@@ -163,9 +159,8 @@ export default function Component() {
 
   useEffect(() => {
     async function hashAllWalletAddresses() {
-      if (addressesHashed) return; // Skip if already hashed
+      if (addressesHashed) return;
 
-      // Fetch all wallet addresses
       const { data, error } = await supabase
         .from('lending_list')
         .select('id, address');
@@ -175,9 +170,7 @@ export default function Component() {
         return;
       }
 
-      // Hash each address that is not already hashed
       for (const record of data) {
-        // Check if the address is already hashed
         if (isAddressHashed(record.address)) continue;
 
         const hashedAddress = hashAddress(record.address);
@@ -194,12 +187,10 @@ export default function Component() {
         }
       }
 
-      setAddressesHashed(true); // Set the state to indicate addresses are hashed
-      hashAllWalletAddresses();
+      setAddressesHashed(true);
     }
 
     function isAddressHashed(address: string): boolean {
-      // Example check: if the address length is not 42 (standard Ethereum address length), assume it's hashed
       return address.length !== 42;
     }
 
@@ -208,7 +199,6 @@ export default function Component() {
 
   const handleRecordTransaction = async (loanId: string) => {
     try {
-      // Fetch the details of the loan
       const { data: loanDetails, error: fetchError } = await supabase
         .from('lending_list')
         .select('*')
@@ -219,7 +209,6 @@ export default function Component() {
         throw fetchError;
       }
 
-      // Prepare the data to insert
       const { address: lenderAddress, lending_amount, duration_return, interest_rate, cryptocurrency } = loanDetails;
 
       const hashedBorrowerAddress = hashAddress(currentUserAddress!);
@@ -228,12 +217,11 @@ export default function Component() {
       const endDate = new Date(startDate);
       endDate.setMonth(startDate.getMonth() + duration_return);
 
-
       const { error: insertError } = await supabase
         .from('transaction_record')
         .insert({
           address_lender: lenderAddress,
-          address_borrower: hashedBorrowerAddress, // Ensure address is hashed
+          address_borrower: hashedBorrowerAddress,
           token_amount: lending_amount,
           lending_or_borrowing_start_date: startDate.toISOString(),
           lending_or_borrowing_end_date: endDate.toISOString(),
@@ -246,6 +234,20 @@ export default function Component() {
       if (insertError) {
         throw insertError;
       }
+
+      // Update the loan status to "Pending"
+      const { error: updateError } = await supabase
+        .from('lending_list')
+        .update({ status: 'Pending' })
+        .eq('id', loanId);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Add the loan ID to the set of borrowed loans
+      setBorrowedLoans(prev => new Set(prev).add(loanId));
+
       if (!currentUserAddress) {
         print("Please connect your wallet first.", "error");
         return;
@@ -257,13 +259,11 @@ export default function Component() {
         print("Please connect your wallet first.", "error");
         return;
       }
-      
+
       console.error('Error recording transaction:', error);
       alert('Failed to record transaction.');
     }
   };
-
-
 
   return (
     <div className="flex flex-col min-h-[100dvh]">
@@ -371,7 +371,7 @@ export default function Component() {
                       <TableRow key={loan.id}>
                         <TableCell>{loan.id}</TableCell>
                         <TableCell>
-                          <Badge>{loan.status}</Badge>
+                          <Badge>{loan.status === 'Pending' ? 'Pending' : loan.status === 'Active' ? 'Active' : ''}</Badge>
                         </TableCell>
                         <TableCell>{loan.lending_amount}</TableCell>
                         <TableCell>{loan.duration_return} {loan.duration_return === 1 ? "Month" : "Months"}</TableCell>
@@ -381,7 +381,12 @@ export default function Component() {
                           {/* <Link href={`/bdetails?id=${loan.id}`}>
                             <Button>Details</Button>
                           </Link> */}
-                          <Button onClick={() => handleRecordTransaction(loan.id)}>Borrow</Button>
+                          <Button
+                            onClick={() => handleRecordTransaction(loan.id.toString())}
+                            disabled={borrowedLoans.has(loan.id.toString()) || loan.status === 'Pending'}
+                          >
+                            {borrowedLoans.has(loan.id.toString()) || loan.status === 'Pending' ? 'Pending' : 'Borrow'}
+                          </Button>
                         </TableCell>
                       </TableRow>
                     ))

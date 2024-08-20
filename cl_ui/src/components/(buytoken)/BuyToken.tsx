@@ -1,16 +1,15 @@
-'use client'
-import { useSimulateContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
+import { useSimulateContract, useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi'
 import { Address, parseEther } from 'viem'
 import { useState, useEffect } from 'react'
 import { print } from "@/utils/toast"
 import ico from '@/abi/ico.json'
 import { ICOContractAddress } from '@/utils/smartContractAddress'
 
-
 export function BuyToken() {
     const contractAddress = ICOContractAddress as Address
     const [amount, setAmount] = useState('0.01')
 
+    const { address } = useAccount()
 
     const { error: estimateError } = useSimulateContract({
         address: contractAddress ?? undefined,
@@ -42,11 +41,9 @@ export function BuyToken() {
         })
     }
 
-
     const handleQuantityInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setAmount(e.target.value)
     }
-
 
     useEffect(() => {
         if (txSuccess) {
@@ -70,7 +67,8 @@ export function BuyToken() {
                         />
                         <button
                             onClick={handleBuyTransaction}
-                            className="ml-2 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            className={`ml-2 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${!address ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            disabled={!address}
                         >
                             Buy
                         </button>

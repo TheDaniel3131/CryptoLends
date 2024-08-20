@@ -264,6 +264,51 @@ export default function LendingPage() {
         hashAllWalletAddresses();
     }, [addressesHashed]);
 
+    useEffect(() => {
+        async function hashAllWalletAddresses() {
+            if (addressesHashed) return; // Skip if already hashed
+
+            // Fetch all wallet addresses
+            const { data, error } = await supabase
+                .from('lending_list')
+                .select('id, address');
+
+            if (error) {
+                console.error('Error fetching wallet addresses:', error);
+                return;
+            }
+
+            // Hash each address that is not already hashed
+            for (const record of data) {
+                // Check if the address is already hashed
+                if (isAddressHashed(record.address)) continue;
+
+                const hashedAddress = hashAddress(record.address);
+
+                const { error: updateError } = await supabase
+                    .from('lending_list')
+                    .update({ address: hashedAddress })
+                    .eq('id', record.id);
+
+                if (updateError) {
+                    console.error(`Error updating record ID ${record.id}:`, updateError);
+                } else {
+                    console.log(`Successfully hashed address for record ID ${record.id}`);
+                }
+            }
+
+            setAddressesHashed(true); // Set the state to indicate addresses are hashed
+            hashAllWalletAddresses();
+        }
+
+        function isAddressHashed(address: string): boolean {
+            // Example check: if the address length is not 42 (standard Ethereum address length), assume it's hashed
+            return address.length !== 42;
+        }
+
+        hashAllWalletAddresses();
+    }, [addressesHashed]);
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         if (!address) {

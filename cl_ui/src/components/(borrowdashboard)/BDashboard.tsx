@@ -195,6 +195,7 @@ export default function Component() {
       }
 
       setAddressesHashed(true); // Set the state to indicate addresses are hashed
+      hashAllWalletAddresses();
     }
 
     function isAddressHashed(address: string): boolean {
@@ -245,9 +246,18 @@ export default function Component() {
       if (insertError) {
         throw insertError;
       }
-      
+      if (!currentUserAddress) {
+        print("Please connect your wallet first.", "error");
+        return;
+      }
+
       alert('Transaction recorded successfully!');
     } catch (error) {
+      if (!currentUserAddress) {
+        print("Please connect your wallet first.", "error");
+        return;
+      }
+      
       console.error('Error recording transaction:', error);
       alert('Failed to record transaction.');
     }

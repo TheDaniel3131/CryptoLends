@@ -276,7 +276,7 @@ export default function Repayment() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">
+                    <TableCell colSpan={12} className="text-center">
                       No repayments available
                     </TableCell>
                   </TableRow>

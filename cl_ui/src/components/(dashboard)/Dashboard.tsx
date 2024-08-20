@@ -15,6 +15,7 @@ import { createClient } from "@supabase/supabase-js";
 import { ethers } from "ethers";
 import { parseEther } from "viem";
 import { toast } from 'react-toastify';
+import crypto from 'crypto';
 
 interface Loan {
     id: number;
@@ -51,6 +52,10 @@ function shortenAddress(address: string): string {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
 }
 
+// Function to hash wallet address
+function hashAddress(address: string): string {
+    return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
 
 export default function Component(): JSX.Element {
     const { address: walletAddress } = useAccount(); // Get the connected wallet address from wagmi
@@ -71,7 +76,7 @@ export default function Component(): JSX.Element {
             const { data: loansData, error } = await supabase
                 .from("transaction_record") // Replace with your actual table name
                 .select("*")
-                .or(`address_lender.eq.${walletAddress},address_borrower.eq.${walletAddress}`);
+                .or(`address_lender.eq.${hashAddress(walletAddress)},address_borrower.eq.${hashAddress(walletAddress)}`);
 
             if (error) {
                 console.error("Error fetching loans:", error.message);
@@ -84,7 +89,7 @@ export default function Component(): JSX.Element {
             const { data: transactionsData, error: transactionsError } = await supabase
                 .from('transaction_record')
                 .select('*')
-                .eq('address_borrower', walletAddress);
+                .eq('address_borrower', hashAddress(walletAddress));
 
             if (transactionsError) throw transactionsError;
 

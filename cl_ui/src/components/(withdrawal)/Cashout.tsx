@@ -1,4 +1,4 @@
-"use client";
+"use client"
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
@@ -15,6 +15,8 @@ import { ethers } from "ethers";
 import { parseEther } from "viem";
 import { toast } from 'react-toastify';
 import { supabase } from '@/lib/supabaseClient';
+import crypto from 'crypto';
+
 
 interface Loan {
     id: number;
@@ -44,6 +46,10 @@ const CONTRACT_ABI = [
 
 const CONTRACT_ADDRESS = "0x90F79bf6EB2c4f870365E785982E1f101E93b906";
 
+function hashAddress(address: string): string {
+    return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
+
 // Function to shorten wallet address
 function shortenAddress(address: string): string {
     if (address.length <= 10) {
@@ -69,7 +75,7 @@ const CashOutPage: React.FC = () => {
             const { data: loansData, error } = await supabase
                 .from("transaction_record") // Replace with your actual table name
                 .select("*")
-                .or(`address_lender.eq.${walletAddress},address_borrower.eq.${walletAddress}`);
+                .or(`address_lender.eq.${hashAddress(walletAddress)},address_borrower.eq.${hashAddress(walletAddress)}`);
 
             if (error) {
                 console.error("Error fetching loans:", error.message);

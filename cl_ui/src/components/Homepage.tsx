@@ -4,7 +4,7 @@ import { JSX, SVGProps, useEffect } from "react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BuyToken } from './(buytoken)/BuyToken'; // Update path as needed
-//import { SellToken } from './(selltoken)/SellToken'; // Update path as needed
+// import { SellToken } from "./(selltoken)/SellToken";
 
 export function Homepage() {
   useEffect(() => {
@@ -126,12 +126,19 @@ export function Homepage() {
             <div className="text-center space-y-4">
               <h2 className="text-3xl font-bold">Buy CryptoLends Tokens</h2>
               <p className="text-muted-foreground">
-                Manage your CryptoLends tokens easily. Buy tokens to participate in lending and selling tokens to get liquidity.
+                Manage your CryptoLends tokens easily. Buy tokens to participate in lending and borrowing activities on our platform.
               </p>
             </div>
             <div className="flex justify-center">
-              <div className="bg-background p-6 rounded-xl shadow-sm w-full max-w-md">
-                <BuyToken />
+              <div className="">
+                <div className="flex flex-col sm:flex-row gap-12">
+                  <div className="bg-background p-6 rounded-xl shadow-sm w-full max-w-4xl flex-1">
+                    <BuyToken />
+                  </div>
+                  {/* <div className="bg-background p-6 rounded-xl shadow-sm w-full max-w-4xl flex-1">
+                    <SellToken />
+                  </div> */}
+                </div>
               </div>
             </div>
           </div>

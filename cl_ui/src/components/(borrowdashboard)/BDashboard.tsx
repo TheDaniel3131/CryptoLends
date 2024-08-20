@@ -69,7 +69,8 @@ export default function Component() {
     }
 
     fetchLoans();
-  }, []);
+  }, [borrowedLoans]);  // Add borrowedLoans as a dependency
+
 
   const filteredLoans = useMemo(() => {
     return loans
@@ -245,6 +246,13 @@ export default function Component() {
         throw updateError;
       }
 
+      // Update the state to reflect the change
+      setLoans((prevLoans) =>
+        prevLoans.map((loan) =>
+          loan.id === loanId ? { ...loan, status: 'Pending' } : loan
+        )
+      );
+
       // Add the loan ID to the set of borrowed loans
       setBorrowedLoans(prev => new Set(prev).add(loanId));
 
@@ -384,8 +392,7 @@ export default function Component() {
                           <Button
                             onClick={() => handleRecordTransaction(loan.id.toString())}
                             disabled={borrowedLoans.has(loan.id.toString()) || loan.status === 'Pending'}
-                          >
-                            {borrowedLoans.has(loan.id.toString()) || loan.status === 'Pending' ? 'Pending' : 'Borrow'}
+                          >Borrow
                           </Button>
                         </TableCell>
                       </TableRow>

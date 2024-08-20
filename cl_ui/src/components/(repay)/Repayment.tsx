@@ -1,4 +1,5 @@
-"use client";
+"use client"
+
 import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
@@ -12,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import 'react-toastify/dist/ReactToastify.css';
 
-
 interface Repayment {
   id: number;
   address_borrower: string;
@@ -21,7 +21,6 @@ interface Repayment {
   lending_or_borrowing_end_date: string;
   status: string;
 }
-
 
 interface SortButtonProps {
   label: string;
@@ -68,6 +67,10 @@ const CONTRACT_ABI = [
   }
 ];
 
+function hashAddress(address: string): string {
+  return crypto.createHash('sha256').update(address.trim().toLowerCase()).digest('hex');
+}
+
 export default function Repayment() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<{ key: keyof Repayment; order: "asc" | "desc" }>({ key: "id", order: "desc" });
@@ -90,7 +93,7 @@ export default function Repayment() {
             lending_or_borrowing_end_date,
             status
           `)
-          .eq('address_borrower', address);
+          .eq('address_borrower', hashAddress(address));
 
         if (error) {
           console.error('Error fetching data from Supabase:', error.message);
@@ -290,76 +293,3 @@ export default function Repayment() {
     </div>
   );
 }
-
-// Icons
-const ChevronDownIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);
-
-const PercentIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="19" x2="5" y1="5" y2="19" />
-    <circle cx="6.5" cy="6.5" r="2.5" />
-    <circle cx="17.5" cy="17.5" r="2.5" />
-  </svg>
-);
-
-const ReceiptIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2Z" />
-    <path d="M16 6h-8v4h8V6ZM8 12h8v4H8v-4Z" />
-  </svg>
-);
-
-const WalletIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
-  <svg
-    {...props}
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M3 7h18c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V9c0-1.1.9-2 2-2Z" />
-    <path d="M10 7v4h11V7" />
-  </svg>
-);
